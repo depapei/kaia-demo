@@ -467,7 +467,7 @@ export default function AdminDashboard() {
                         ...formData,
                         sliceOptions: [
                           ...formData.sliceOptions,
-                          { slices: "Full", price: 0 },
+                          { slices: "Full", price: formData.price },
                         ],
                       })
                     }
