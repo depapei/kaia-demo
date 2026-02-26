@@ -10,26 +10,31 @@ interface ProductDetailModalProps {
 
 const SLICE_OPTIONS = [3, 4, 10]; // This is now dynamic
 
-export default function ProductDetailModal({ product, onClose }: ProductDetailModalProps) {
+export default function ProductDetailModal({
+  product,
+  onClose,
+}: ProductDetailModalProps) {
   const { addToCart } = useCart();
-  
+
   const sliceOptions = useMemo(() => {
     if (!product?.sliceOptions) return [];
-    return typeof product.sliceOptions === "string" 
-      ? JSON.parse(product.sliceOptions) 
+    return typeof product.sliceOptions === "string"
+      ? JSON.parse(product.sliceOptions)
       : product.sliceOptions;
   }, [product?.sliceOptions]);
 
   const [selectedSlices, setSelectedSlices] = useState<number | string | null>(
-    sliceOptions.length > 0 ? sliceOptions[0].slices : null
+    sliceOptions.length > 0 ? sliceOptions[0].slices : null,
   );
-  
+
   const [isAdded, setIsAdded] = useState(false);
 
   const currentPrice = useMemo(() => {
     if (!product) return 0;
     if (!selectedSlices || sliceOptions.length === 0) return product.price;
-    const option = sliceOptions.find((opt: any) => opt.slices === selectedSlices);
+    const option = sliceOptions.find(
+      (opt: any) => opt.slices === selectedSlices,
+    );
     return option ? option.price : product.price;
   }, [selectedSlices, sliceOptions, product]);
 
@@ -38,7 +43,9 @@ export default function ProductDetailModal({ product, onClose }: ProductDetailMo
       style: "currency",
       currency: "IDR",
       minimumFractionDigits: 0,
-    }).format(price).replace("Rp", "Rp ");
+    })
+      .format(price)
+      .replace("Rp", "Rp ");
   };
 
   const handleAddToCart = () => {
@@ -68,7 +75,7 @@ export default function ProductDetailModal({ product, onClose }: ProductDetailMo
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             className="fixed inset-4 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-full md:max-w-4xl bg-white z-[151] rounded-[2rem] shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[90vh]"
           >
-            <button 
+            <button
               onClick={onClose}
               className="absolute top-4 right-4 p-2 bg-white/80 backdrop-blur-sm rounded-full text-kaia-charcoal hover:bg-kaia-red hover:text-white transition-all z-20 shadow-md"
             >
@@ -77,9 +84,9 @@ export default function ProductDetailModal({ product, onClose }: ProductDetailMo
 
             <div className="w-full md:w-1/2 h-64 md:h-auto bg-kaia-tan/30 p-8 flex items-center justify-center relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
-              <img 
-                src={product.image} 
-                alt={product.name} 
+              <img
+                src={product.image}
+                alt={product.name}
                 className="max-w-full max-h-full object-contain drop-shadow-2xl relative z-10"
                 referrerPolicy="no-referrer"
               />
@@ -101,32 +108,44 @@ export default function ProductDetailModal({ product, onClose }: ProductDetailMo
                     "{product.desc}"
                   </p>
                   <p className="text-sm md:text-base">
-                    {product.longDesc || "Handcrafted with the finest ingredients, our " + product.name + " is a testament to our passion for artisanal baking. Perfect for celebrations or a simple moment of indulgence."}
+                    {product.longDesc ||
+                      "Handcrafted with the finest ingredients, our " +
+                        product.name +
+                        " is a testament to our passion for artisanal baking. Perfect for celebrations or a simple moment of indulgence."}
                   </p>
                 </div>
-                
+
                 {sliceOptions.length > 0 && (
                   <div className="mt-8">
-                    <span className="text-[10px] uppercase tracking-widest font-bold text-kaia-taupe block mb-3">Select Slices</span>
+                    <span className="text-[10px] uppercase tracking-widest font-bold text-kaia-taupe block mb-3">
+                      Select Slices
+                    </span>
                     <div className="flex flex-wrap gap-3">
                       {sliceOptions.map((option: any) => (
                         <button
                           key={option.slices}
-                          onClick={() => setSelectedSlices(option.slices === selectedSlices ? null : option.slices)}
+                          onClick={() =>
+                            setSelectedSlices(
+                              option.slices === selectedSlices
+                                ? null
+                                : option.slices,
+                            )
+                          }
                           className={`px-6 py-3 rounded-xl border-2 transition-all font-bold text-sm ${
-                            selectedSlices === option.slices 
-                              ? "border-kaia-red bg-kaia-red text-white shadow-lg" 
+                            selectedSlices === option.slices
+                              ? "border-kaia-red bg-kaia-red text-white shadow-lg"
                               : "border-kaia-tan/30 text-kaia-taupe hover:border-kaia-tan"
                           }`}
                         >
-                          {option.slices} {option.slices === 'Full' ? '' : 'Slices'}
+                          {option.slices}{" "}
+                          {option.slices === "Full" ? "" : "Slices"}
                         </button>
                       ))}
                     </div>
                   </div>
                 )}
 
-                <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="bg-kaia-cream/50 p-4 rounded-xl border border-kaia-tan/50">
                     <span className="text-[10px] uppercase tracking-widest font-bold text-kaia-taupe block mb-1">Ingredients</span>
                     <span className="text-xs font-medium">Premium Flour, Organic Eggs, Pure Butter</span>
@@ -135,19 +154,21 @@ export default function ProductDetailModal({ product, onClose }: ProductDetailMo
                     <span className="text-[10px] uppercase tracking-widest font-bold text-kaia-taupe block mb-1">Serving</span>
                     <span className="text-xs font-medium">Best served at room temperature</span>
                   </div>
-                </div>
+                </div> */}
               </div>
 
               <div className="mt-10 flex gap-4 sticky bottom-0 bg-white pt-4">
-                <button 
+                <button
                   onClick={handleAddToCart}
                   disabled={isAdded}
                   className={`flex-grow py-5 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all shadow-xl ${
-                    isAdded ? "bg-kaia-sage text-white" : "bg-kaia-red text-white hover:bg-kaia-charcoal"
+                    isAdded
+                      ? "bg-kaia-sage text-white"
+                      : "bg-kaia-red text-white hover:bg-kaia-charcoal"
                   }`}
                 >
                   {isAdded ? (
-                    <motion.div 
+                    <motion.div
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       className="flex items-center gap-2"
