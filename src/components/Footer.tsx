@@ -11,7 +11,7 @@ export default function Footer() {
               Crafting artisanal moments of joy through handcrafted cakes and pantry staples. Made with love, shared with passion.
             </p>
             <div className="flex gap-4">
-              <a href="#" className="hover:text-kaia-red transition-colors"><Instagram size={24} /></a>
+              <a href="https://www.instagram.com/kaiapantry/" className="hover:text-kaia-red transition-colors"><Instagram size={24} /></a>
               <a href="#" className="hover:text-kaia-red transition-colors"><Facebook size={24} /></a>
               <a href="#" className="hover:text-kaia-red transition-colors"><Mail size={24} /></a>
             </div>
@@ -22,7 +22,7 @@ export default function Footer() {
             <ul className="space-y-4 text-sm font-light">
               <li className="flex items-start gap-3">
                 <MapPin size={16} className="mt-0.5 text-kaia-red" />
-                <span>45 Artisans Lane <br /> Flour District, KA 90210</span>
+                <span>BSD, Gading Serpong <br /> South Tangerang, Banten</span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone size={16} className="text-kaia-red" />

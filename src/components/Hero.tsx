@@ -55,7 +55,7 @@ export default function Hero() {
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </a>
           <a 
-            href="#about" 
+            href="about" 
             className="inline-flex items-center justify-center gap-2 bg-white text-kaia-charcoal border-2 border-kaia-tan px-10 py-4 rounded-2xl text-lg font-bold hover:bg-kaia-cream transition-all duration-300"
           >
             Our Story
