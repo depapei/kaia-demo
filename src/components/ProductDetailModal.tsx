@@ -1,7 +1,7 @@
+import React, { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { X, ShoppingBag, Check } from "lucide-react";
 import { MenuItem, useCart } from "../context/CartContext";
-import { useState, useMemo } from "react";
 
 interface ProductDetailModalProps {
   product: MenuItem | null;
@@ -48,9 +48,14 @@ export default function ProductDetailModal({
       .replace("Rp", "Rp ");
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (e: React.MouseEvent) => {
     if (!product) return;
-    addToCart({ ...product, price: currentPrice }, selectedSlices || undefined);
+    const startPos = { x: e.clientX, y: e.clientY };
+    addToCart(
+      { ...product, price: currentPrice },
+      selectedSlices || undefined,
+      startPos,
+    );
     setIsAdded(true);
     setTimeout(() => {
       setIsAdded(false);

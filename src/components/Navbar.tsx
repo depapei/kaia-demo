@@ -99,7 +99,12 @@ export default function Navbar({ onCartClick, onHomeClick }: NavbarProps) {
                 <Link to="/login" className="text-xs uppercase tracking-widest font-bold text-kaia-taupe hover:text-kaia-red transition-colors">Sign In</Link>
               )}
 
-              <button 
+              <motion.button 
+                id="cart-icon"
+                key={totalItems}
+                initial={{ scale: 1 }}
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ duration: 0.3 }}
                 onClick={onCartClick}
                 className="relative p-2 text-kaia-charcoal hover:text-kaia-red transition-colors group"
               >
@@ -113,12 +118,17 @@ export default function Navbar({ onCartClick, onHomeClick }: NavbarProps) {
                     {totalItems}
                   </motion.span>
                 )}
-              </button>
+              </motion.button>
             </div>
           </div>
           
           <div className="flex items-center gap-4 md:hidden">
-            <button 
+            <motion.button 
+              id="cart-icon-mobile"
+              key={totalItems}
+              initial={{ scale: 1 }}
+              animate={{ scale: [1, 1.2, 1] }}
+              transition={{ duration: 0.3 }}
               onClick={onCartClick}
               className="relative p-2 text-stone-800"
             >
@@ -128,7 +138,7 @@ export default function Navbar({ onCartClick, onHomeClick }: NavbarProps) {
                   {totalItems}
                 </span>
               )}
-            </button>
+            </motion.button>
             <button onClick={() => navigate("/login")} className="text-kaia-charcoal">
               <User size={24} />
             </button>

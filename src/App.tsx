@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
@@ -18,12 +18,21 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import WishlistPage from "./pages/WishlistPage";
 import UserTransactionsPage from "./pages/UserTransactionsPage";
+import OnboardingPage from "./pages/OnboardingPage";
+import FlyingItemsOverlay from "./components/FlyingItemsOverlay";
 import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
 
 function LandingPage() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const hasSeenOnboarding = localStorage.getItem("hasSeenOnboarding");
+    if (!hasSeenOnboarding) {
+      navigate("/onboarding");
+    }
+  }, [navigate]);
 
   const handleCheckout = () => {
     setIsCartOpen(false);
@@ -70,8 +79,10 @@ export default function App() {
   return (
     <AuthProvider>
       <CartProvider>
+        <FlyingItemsOverlay />
         <Router>
           <Routes>
+            <Route path="/onboarding" element={<OnboardingPage />} />
             <Route path="/" element={<LandingPage />} />
             <Route path="/checkout" element={<CheckoutView />} />
             <Route path="/about" element={<AboutPage />} />

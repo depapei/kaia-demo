@@ -23,20 +23,28 @@ export interface CartItem extends MenuItem {
 
 interface CartContextType {
   cart: CartItem[];
-  addToCart: (item: MenuItem, slices?: number | string) => void;
+  addToCart: (item: MenuItem, slices?: number | string, startPos?: { x: number, y: number }) => void;
   removeFromCart: (id: string, slices?: number | string) => void;
   updateQuantity: (id: string, delta: number, slices?: number | string) => void;
   clearCart: () => void;
   totalItems: number;
   totalPrice: number;
+  flyingItems: { id: string, image: string, startPos: { x: number, y: number } }[];
+  removeFlyingItem: (id: string) => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [flyingItems, setFlyingItems] = useState<{ id: string, image: string, startPos: { x: number, y: number } }[]>([]);
 
-  const addToCart = (item: MenuItem, slices?: number | string) => {
+  const addToCart = (item: MenuItem, slices?: number | string, startPos?: { x: number, y: number }) => {
+    if (startPos) {
+      const flyId = `${item.id}-${Date.now()}`;
+      setFlyingItems(prev => [...prev, { id: flyId, image: item.image, startPos }]);
+    }
+
     setCart((prev) => {
       const existing = prev.find((i) => i.id === item.id && i.slices === slices);
       if (existing) {
@@ -46,6 +54,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }
       return [...prev, { ...item, quantity: 1, slices }];
     });
+  };
+
+  const removeFlyingItem = (id: string) => {
+    setFlyingItems(prev => prev.filter(item => item.id !== id));
   };
 
   const removeFromCart = (id: string, slices?: number | string) => {
@@ -75,6 +87,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
         clearCart,
         totalItems,
         totalPrice,
+        flyingItems,
+        removeFlyingItem,
       }}
     >
       {children}

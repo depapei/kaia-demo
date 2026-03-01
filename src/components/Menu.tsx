@@ -79,8 +79,9 @@ const MenuCard: React.FC<MenuCardProps> = ({ item, onInfoClick }) => {
       .replace("Rp", "Rp ");
   };
 
-  const handleAdd = () => {
-    addToCart({ ...item, price: currentPrice }, selectedSlices);
+  const handleAdd = (e: React.MouseEvent) => {
+    const startPos = { x: e.clientX, y: e.clientY };
+    addToCart({ ...item, price: currentPrice }, selectedSlices, startPos);
     setIsAdded(true);
     setTimeout(() => setIsAdded(false), 2000);
   };
