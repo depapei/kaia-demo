@@ -29,34 +29,34 @@ export default function FlyingItemsOverlay() {
   }, []);
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-[200]">
+    <div className="fixed inset-0 pointer-events-none z-200">
       <AnimatePresence>
         {flyingItems.map((item) => (
           <motion.div
             key={item.id}
-            initial={{ 
-              x: item.startPos.x - 24, 
-              y: item.startPos.y - 24, 
-              scale: 1, 
-              opacity: 1 
+            initial={{
+              x: item.startPos.x - 24,
+              y: item.startPos.y - 24,
+              scale: 1,
+              opacity: 1,
             }}
-            animate={{ 
-              x: cartPos.x - 12, 
-              y: cartPos.y - 12, 
-              scale: 0.2, 
-              opacity: 0.5 
+            animate={{
+              x: cartPos.x - 12,
+              y: cartPos.y - 12,
+              scale: 0.2,
+              opacity: 0.5,
             }}
             exit={{ opacity: 0 }}
-            transition={{ 
-              duration: 0.8, 
-              ease: [0.16, 1, 0.3, 1] 
+            transition={{
+              duration: 0.8,
+              ease: [0.16, 1, 0.3, 1],
             }}
             onAnimationComplete={() => removeFlyingItem(item.id)}
             className="fixed w-12 h-12 rounded-full overflow-hidden shadow-xl border-2 border-white"
           >
-            <img 
-              src={item.image} 
-              alt="flying item" 
+            <img
+              src={item.image}
+              alt="flying item"
               className="w-full h-full object-cover"
               referrerPolicy="no-referrer"
             />

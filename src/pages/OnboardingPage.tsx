@@ -8,24 +8,30 @@ const SLIDES = [
     id: 1,
     title: "Artisanal Baking",
     subtitle: "Handcrafted with Love",
-    description: "Every treat in our pantry is baked fresh daily using traditional methods and organic ingredients.",
-    image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&q=80&w=1200",
+    description:
+      "Every treat in our pantry is baked fresh daily using traditional methods and organic ingredients.",
+    image:
+      "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&q=80&w=1200",
     color: "bg-kaia-cream",
   },
   {
     id: 2,
     title: "Pure Ingredients",
     subtitle: "Nature's Finest",
-    description: "We source only the best organic flour, farm-fresh eggs, and pure butter for that authentic home-baked taste.",
-    image: "https://images.unsplash.com/photo-1486427944299-d1955d23e34d?auto=format&fit=crop&q=80&w=1200",
+    description:
+      "We source only the best organic flour, farm-fresh eggs, and pure butter for that authentic home-baked taste.",
+    image:
+      "https://images.unsplash.com/photo-1486427944299-d1955d23e34d?auto=format&fit=crop&q=80&w=1200",
     color: "bg-kaia-tan",
   },
   {
     id: 3,
     title: "Shared Moments",
     subtitle: "Joy in Every Crumb",
-    description: "Whether it's a celebration or a quiet afternoon, our treats are made to be shared and savored.",
-    image: "https://images.unsplash.com/photo-1517433670267-08bbd4be890f?auto=format&fit=crop&q=80&w=1200",
+    description:
+      "Whether it's a celebration or a quiet afternoon, our treats are made to be shared and savored.",
+    image:
+      "https://images.unsplash.com/photo-1517433670267-08bbd4be890f?auto=format&fit=crop&q=80&w=1200",
     color: "bg-kaia-sage",
   },
 ];
@@ -48,7 +54,7 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="fixed inset-0 bg-kaia-charcoal z-[200] flex flex-col overflow-hidden">
+    <div className="fixed inset-0 bg-kaia-charcoal z-200 flex flex-col overflow-hidden">
       <AnimatePresence mode="wait">
         <motion.div
           key={currentSlide}
@@ -85,7 +91,7 @@ export default function OnboardingPage() {
       </div>
 
       {/* Content Area */}
-      <div className="relative flex-grow flex flex-col items-center justify-center px-6 text-center z-10">
+      <div className="relative grow flex flex-col items-center justify-center px-6 text-center z-10">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentSlide}
@@ -103,7 +109,7 @@ export default function OnboardingPage() {
             >
               {SLIDES[currentSlide].subtitle}
             </motion.span>
-            
+
             <motion.h2
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -136,7 +142,9 @@ export default function OnboardingPage() {
               key={idx}
               onClick={() => setCurrentSlide(idx)}
               className={`h-1.5 transition-all duration-500 rounded-full ${
-                idx === currentSlide ? "w-12 bg-kaia-red" : "w-3 bg-white/30 hover:bg-white/50"
+                idx === currentSlide
+                  ? "w-12 bg-kaia-red"
+                  : "w-3 bg-white/30 hover:bg-white/50"
               }`}
             />
           ))}
@@ -149,9 +157,14 @@ export default function OnboardingPage() {
           <div className="absolute inset-0 bg-kaia-red blur-2xl opacity-20 group-hover:opacity-40 transition-opacity" />
           <div className="relative bg-white text-kaia-charcoal px-16 py-6 rounded-2xl font-bold flex items-center gap-4 hover:bg-kaia-red hover:text-white transition-all duration-500 shadow-2xl overflow-hidden">
             <span className="relative z-10 text-lg uppercase tracking-widest">
-              {currentSlide === SLIDES.length - 1 ? "Enter the Pantry" : "Continue Journey"}
+              {currentSlide === SLIDES.length - 1
+                ? "Enter the Pantry"
+                : "Continue Journey"}
             </span>
-            <ArrowRight size={20} className="relative z-10 group-hover:translate-x-2 transition-transform" />
+            <ArrowRight
+              size={20}
+              className="relative z-10 group-hover:translate-x-2 transition-transform"
+            />
           </div>
         </button>
       </div>

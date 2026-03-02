@@ -12,14 +12,17 @@ export default function AboutPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar onCartClick={() => setIsCartOpen(true)} onHomeClick={() => navigate("/")} />
-      <main className="flex-grow pt-24">
+      <Navbar
+        onCartClick={() => setIsCartOpen(true)}
+        onHomeClick={() => navigate("/")}
+      />
+      <main className="grow pt-24">
         <About />
       </main>
-      <CartDrawer 
-        isOpen={isCartOpen} 
-        onClose={() => setIsCartOpen(false)} 
-        onCheckout={() => navigate("/checkout")} 
+      <CartDrawer
+        isOpen={isCartOpen}
+        onClose={() => setIsCartOpen(false)}
+        onCheckout={() => navigate("/checkout")}
       />
       <Footer />
     </div>

@@ -174,7 +174,7 @@ export default function AdminDashboard() {
           </p>
         </div>
 
-        <nav className="space-y-4 flex-grow">
+        <nav className="space-y-4 grow">
           <button
             onClick={() => setActiveTab("products")}
             className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all ${activeTab === "products" ? "bg-kaia-red text-white" : "text-kaia-taupe hover:text-white hover:bg-white/5"}`}
@@ -201,7 +201,7 @@ export default function AdminDashboard() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-grow p-12 overflow-y-auto">
+      <main className="grow p-12 overflow-y-auto">
         <header className="flex justify-between items-center mb-12">
           <h2 className="text-6xl font-display text-kaia-charcoal">
             {activeTab === "products"
@@ -243,7 +243,7 @@ export default function AdminDashboard() {
                   alt={product.name}
                   className="w-24 h-24 object-cover rounded-2xl"
                 />
-                <div className="flex-grow">
+                <div className="grow">
                   <div className="flex justify-between items-start">
                     <div>
                       <span className="text-[10px] uppercase tracking-widest font-bold text-kaia-red">
@@ -323,7 +323,7 @@ export default function AdminDashboard() {
                         {tx.customerEmail}
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-xs text-kaia-taupe max-w-[200px]">
+                    <td className="px-6 py-4 text-xs text-kaia-taupe max-w-50">
                       <div className="truncate font-bold">{tx.address}</div>
                       <div>
                         {tx.city}, {tx.postalCode}
@@ -354,7 +354,7 @@ export default function AdminDashboard() {
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white w-full max-w-2xl rounded-[2rem] p-10 shadow-2xl relative max-h-[90vh] overflow-y-auto"
+            className="bg-white w-full max-w-2xl rounded-4xl p-10 shadow-2xl relative max-h-[90vh] overflow-y-auto"
           >
             <button
               onClick={() => setIsModalOpen(false)}
@@ -483,7 +483,7 @@ export default function AdminDashboard() {
                       key={index}
                       className="flex gap-4 items-end bg-kaia-cream/20 p-4 rounded-xl border border-kaia-tan/20"
                     >
-                      <div className="flex-grow grid grid-cols-2 gap-4">
+                      <div className="grow grid grid-cols-2 gap-4">
                         <div>
                           <label className="block text-[8px] uppercase tracking-widest font-bold text-kaia-taupe mb-1">
                             Slices (e.g. 3, 10, Full)

@@ -4,7 +4,12 @@
  */
 
 import { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useNavigate,
+} from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import Menu from "./components/Menu";
@@ -42,15 +47,18 @@ function LandingPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar onCartClick={() => setIsCartOpen(true)} onHomeClick={() => navigate("/")} />
-      <main className="flex-grow">
+      <Navbar
+        onCartClick={() => setIsCartOpen(true)}
+        onHomeClick={() => navigate("/")}
+      />
+      <main className="grow">
         <Hero />
         <Menu />
       </main>
-      <CartDrawer 
-        isOpen={isCartOpen} 
-        onClose={() => setIsCartOpen(false)} 
-        onCheckout={handleCheckout} 
+      <CartDrawer
+        isOpen={isCartOpen}
+        onClose={() => setIsCartOpen(false)}
+        onCheckout={handleCheckout}
       />
       <Footer />
     </div>
@@ -63,12 +71,15 @@ function CheckoutView() {
 
   return (
     <>
-      <Navbar onCartClick={() => setIsCartOpen(true)} onHomeClick={() => navigate("/")} />
+      <Navbar
+        onCartClick={() => setIsCartOpen(true)}
+        onHomeClick={() => navigate("/")}
+      />
       <CheckoutPage onBack={() => navigate("/")} />
-      <CartDrawer 
-        isOpen={isCartOpen} 
-        onClose={() => setIsCartOpen(false)} 
-        onCheckout={() => setIsCartOpen(false)} 
+      <CartDrawer
+        isOpen={isCartOpen}
+        onClose={() => setIsCartOpen(false)}
+        onCheckout={() => setIsCartOpen(false)}
       />
       <Footer />
     </>

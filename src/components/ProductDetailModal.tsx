@@ -166,7 +166,7 @@ export default function ProductDetailModal({
                 <button
                   onClick={handleAddToCart}
                   disabled={isAdded}
-                  className={`flex-grow py-5 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all shadow-xl ${
+                  className={`grow py-5 rounded-2xl font-bold flex items-center justify-center gap-2 transition-all shadow-xl ${
                     isAdded
                       ? "bg-kaia-sage text-white"
                       : "bg-kaia-red text-white hover:bg-kaia-charcoal"

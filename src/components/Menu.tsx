@@ -101,7 +101,7 @@ const MenuCard: React.FC<MenuCardProps> = ({ item, onInfoClick }) => {
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
           referrerPolicy="no-referrer"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        <div className="absolute inset-0 bg-linear-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
         <div className="absolute top-4 right-4 flex flex-col gap-2">
           <button
@@ -129,7 +129,7 @@ const MenuCard: React.FC<MenuCardProps> = ({ item, onInfoClick }) => {
         </div>
       </div>
 
-      <div className="p-8 flex-grow flex flex-col">
+      <div className="p-8 grow flex flex-col">
         <div className="flex justify-between items-start mb-4">
           <h3 className="text-3xl font-display text-kaia-charcoal leading-tight">
             {item.name}
@@ -153,7 +153,7 @@ const MenuCard: React.FC<MenuCardProps> = ({ item, onInfoClick }) => {
                 <button
                   key={opt.slices}
                   onClick={() => setSelectedSlices(opt.slices)}
-                  className={`flex-1 min-w-[60px] py-2 rounded-xl text-xs font-bold transition-all border ${
+                  className={`flex-1 min-w-15 py-2 rounded-xl text-xs font-bold transition-all border ${
                     selectedSlices === opt.slices
                       ? "bg-kaia-red border-kaia-red text-white shadow-md"
                       : "bg-kaia-cream/50 border-kaia-tan/30 text-kaia-taupe hover:border-kaia-tan"

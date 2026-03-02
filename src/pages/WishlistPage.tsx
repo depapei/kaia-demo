@@ -37,17 +37,24 @@ export default function WishlistPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-kaia-cream">
-      <Navbar onCartClick={() => setIsCartOpen(true)} onHomeClick={() => navigate("/")} />
-      <main className="flex-grow pt-32 px-6 max-w-6xl mx-auto w-full pb-24">
+      <Navbar
+        onCartClick={() => setIsCartOpen(true)}
+        onHomeClick={() => navigate("/")}
+      />
+      <main className="grow pt-32 px-6 max-w-6xl mx-auto w-full pb-24">
         <div className="flex items-center gap-4 mb-12">
           <Heart className="text-kaia-red fill-kaia-red" size={40} />
-          <h1 className="text-6xl font-display text-kaia-charcoal">My Wishlist</h1>
+          <h1 className="text-6xl font-display text-kaia-charcoal">
+            My Wishlist
+          </h1>
         </div>
 
         {wishlist.length === 0 ? (
           <div className="bg-white rounded-[3rem] p-20 text-center border border-kaia-tan/30">
-            <p className="text-kaia-taupe text-2xl font-light mb-8">Your wishlist is empty. Start adding some treats!</p>
-            <button 
+            <p className="text-kaia-taupe text-2xl font-light mb-8">
+              Your wishlist is empty. Start adding some treats!
+            </p>
+            <button
               onClick={() => navigate("/")}
               className="bg-kaia-red text-white px-10 py-4 rounded-2xl font-bold hover:bg-kaia-charcoal transition-all shadow-xl"
             >
@@ -56,11 +63,18 @@ export default function WishlistPage() {
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {wishlist.map(product => (
-              <div key={product.id} className="bg-white rounded-[2.5rem] overflow-hidden shadow-sm border border-kaia-tan/30 group">
+            {wishlist.map((product) => (
+              <div
+                key={product.id}
+                className="bg-white rounded-[2.5rem] overflow-hidden shadow-sm border border-kaia-tan/30 group"
+              >
                 <div className="h-64 overflow-hidden relative">
-                  <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                  <button 
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                  <button
                     onClick={() => removeFromWishlist(product.id)}
                     className="absolute top-4 right-4 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center text-kaia-red hover:bg-kaia-red hover:text-white transition-all shadow-md"
                   >
@@ -68,9 +82,13 @@ export default function WishlistPage() {
                   </button>
                 </div>
                 <div className="p-8">
-                  <h3 className="text-2xl font-display text-kaia-charcoal mb-2">{product.name}</h3>
-                  <p className="text-kaia-red font-bold mb-6">Rp {product.price.toLocaleString()}</p>
-                  <button 
+                  <h3 className="text-2xl font-display text-kaia-charcoal mb-2">
+                    {product.name}
+                  </h3>
+                  <p className="text-kaia-red font-bold mb-6">
+                    Rp {product.price.toLocaleString()}
+                  </p>
+                  <button
                     onClick={() => {
                       addToCart({ ...product, quantity: 1 });
                       setIsCartOpen(true);
@@ -86,10 +104,10 @@ export default function WishlistPage() {
           </div>
         )}
       </main>
-      <CartDrawer 
-        isOpen={isCartOpen} 
-        onClose={() => setIsCartOpen(false)} 
-        onCheckout={() => navigate("/checkout")} 
+      <CartDrawer
+        isOpen={isCartOpen}
+        onClose={() => setIsCartOpen(false)}
+        onCheckout={() => navigate("/checkout")}
       />
       <Footer />
     </div>
