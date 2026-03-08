@@ -10,6 +10,7 @@ import {
   Trash2,
   Edit2,
   X,
+  PanelsTopLeftIcon,
 } from "lucide-react";
 import {
   useAdminProducts,
@@ -185,6 +186,14 @@ export default function AdminDashboard() {
             <History size={20} />
             <span className="font-bold tracking-wide">Transactions</span>
           </button>
+          <Link to="/">
+            <button
+              className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all text-kaia-taupe hover:text-white hover:bg-white/5`}
+            >
+              <PanelsTopLeftIcon size={20} />
+              <span className="font-bold tracking-wide">Website</span>
+            </button>
+          </Link>
         </nav>
 
         <button
