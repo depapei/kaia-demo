@@ -62,7 +62,20 @@ export default function AdminDashboard() {
 
   const navigate = useNavigate();
   const { data: products = [], refetch: refetchProducts } = useAdminProducts();
-  const { data: transactions = [] } = useAdminTransactions();
+  const { data: transactions_raw = [] } = useAdminTransactions();
+  const transactions = useMemo(() => {
+    const trxs = transactions_raw;
+    if (trxs !== null && trxs.length > 0) {
+      return [...trxs].sort((a, b) => {
+        const dateA = new Date(a.createdAt);
+        const dateB = new Date(b.createdAt);
+
+        return dateB.getTime() - dateA.getTime();
+      });
+    }
+
+    return [];
+  }, [transactions_raw]);
   const createProductMutation = useCreateAdminProduct();
 
   const handleLogout = () => {
@@ -322,49 +335,47 @@ export default function AdminDashboard() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-kaia-tan/20">
-                {transactions !== null &&
-                  transactions.length > 0 &&
-                  transactions.map((tx) => (
-                    <tr
-                      key={tx.id}
-                      className="hover:bg-kaia-cream/20 transition-colors"
-                    >
-                      <td className="px-6 py-4 text-xs font-mono text-kaia-taupe">
-                        {tx.id.split("-")[0]}...
-                      </td>
-                      <td className="px-6 py-4 text-sm text-kaia-charcoal">
-                        {new Date(tx.createdAt).toLocaleDateString()}
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm font-bold text-kaia-charcoal">
-                          {tx.customerName}
-                        </div>
-                        <div className="text-xs text-kaia-taupe">
-                          {tx.customerEmail}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-xs text-kaia-taupe max-w-50">
-                        <div className="truncate font-bold">{tx.address}</div>
-                        <div>
-                          {tx.city}, {tx.postalCode}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-sm font-bold text-kaia-red">
-                        {formatPrice(tx.totalPrice)}
-                      </td>
-                      <td className="px-6 py-4 text-xs text-kaia-taupe">
-                        {tx.items !== undefined &&
-                          tx.items !== null &&
-                          tx.items.length > 0 &&
-                          tx.items.map((item: any) => (
-                            <li>
-                              {item.quantity}x {item.name}
-                              {item.slices ? ` (${item.slices} slices)` : ""}
-                            </li>
-                          ))}
-                      </td>
-                    </tr>
-                  ))}
+                {transactions.map((tx) => (
+                  <tr
+                    key={tx.id}
+                    className="hover:bg-kaia-cream/20 transition-colors"
+                  >
+                    <td className="px-6 py-4 text-xs font-mono text-kaia-taupe">
+                      {tx.id.split("-")[0]}...
+                    </td>
+                    <td className="px-6 py-4 text-sm text-kaia-charcoal">
+                      {new Date(tx.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="text-sm font-bold text-kaia-charcoal">
+                        {tx.customerName}
+                      </div>
+                      <div className="text-xs text-kaia-taupe">
+                        {tx.customerEmail}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-xs text-kaia-taupe max-w-50">
+                      <div className="truncate font-bold">{tx.address}</div>
+                      <div>
+                        {tx.city}, {tx.postalCode}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-sm font-bold text-kaia-red">
+                      {formatPrice(tx.totalPrice)}
+                    </td>
+                    <td className="px-6 py-4 text-xs text-kaia-taupe">
+                      {tx.items !== undefined &&
+                        tx.items !== null &&
+                        tx.items.length > 0 &&
+                        tx.items.map((item: any) => (
+                          <li>
+                            {item.quantity}x {item.name}
+                            {item.slices ? ` (${item.slices} slices)` : ""}
+                          </li>
+                        ))}
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
