@@ -3,7 +3,8 @@ import { useState, useEffect } from "react";
 import { ShoppingBag, Heart, User, LogOut, Receipt } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { HashLink as Link } from "react-router-hash-link";
 
 interface NavbarProps {
   onCartClick: () => void;
@@ -52,7 +53,8 @@ export default function Navbar({ onCartClick, onHomeClick }: NavbarProps) {
 
           <div className="hidden md:flex gap-8 items-center">
             <Link
-              to="/"
+              smooth
+              to="/#menu"
               className="text-sm uppercase tracking-widest font-bold text-kaia-charcoal hover:text-kaia-red transition-colors"
             >
               Menu
