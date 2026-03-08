@@ -414,6 +414,7 @@ export default function AdminDashboard() {
                       Price (IDR)
                     </label>
                     <input
+                      onWheel={(e) => e.currentTarget.blur()}
                       type="number"
                       value={formData.price}
                       onChange={(e) =>
@@ -554,6 +555,7 @@ export default function AdminDashboard() {
                             </label>
                             <input
                               type="number"
+                              onWheel={(e) => e.currentTarget.blur()}
                               value={
                                 formData.price &&
                                 opt.slices.toUpperCase() === "FULL"
