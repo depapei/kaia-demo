@@ -9,6 +9,7 @@ import CartDrawer from "../components/CartDrawer";
 import { DollarSign, Heart, ShoppingBag, Trash2 } from "lucide-react";
 import { MenuItem, useCart } from "../context/CartContext";
 import ProductDetailModal from "../components/ProductDetailModal";
+import { motion } from "motion/react";
 
 export default function WishlistPage() {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -73,49 +74,57 @@ export default function WishlistPage() {
             </button>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {wishlist !== null &&
-              wishlist.length > 0 &&
-              wishlist.map((product) => (
-                <div
-                  key={product.id}
-                  className="bg-white rounded-[2.5rem] overflow-hidden shadow-sm border border-kaia-tan/30 group"
-                >
-                  <div className="h-64 overflow-hidden relative">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
-                    <button
-                      onClick={() => removeFromWishlist(product.id)}
-                      className="absolute top-4 right-4 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center text-kaia-red hover:bg-kaia-red hover:text-white transition-all shadow-md"
-                    >
-                      <Trash2 size={18} />
-                    </button>
+          <motion.div
+            initial={{ opacity: 0, x: 50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="space-y-8"
+          >
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {wishlist !== null &&
+                wishlist.length > 0 &&
+                wishlist.map((product) => (
+                  <div
+                    key={product.id}
+                    className="bg-white rounded-[2.5rem] overflow-hidden shadow-sm border border-kaia-tan/30 group"
+                  >
+                    <div className="h-64 overflow-hidden relative">
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                      <button
+                        onClick={() => removeFromWishlist(product.id)}
+                        className="absolute top-4 right-4 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center text-kaia-red hover:bg-kaia-red hover:text-white transition-all shadow-md"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                    <div className="p-8">
+                      <h3 className="text-2xl font-display text-kaia-charcoal mb-2">
+                        {product.name}
+                      </h3>
+                      <p className="text-kaia-red font-bold mb-6">
+                        Rp {product.price.toLocaleString()}
+                      </p>
+                      <button
+                        onClick={() => {
+                          // addToCart({ ...product, quantity: 1 });
+                          // setIsCartOpen(true);
+                          setSelectedProduct(product);
+                        }}
+                        className="w-full bg-kaia-cream text-kaia-charcoal py-4 rounded-xl font-bold flex items-center justify-center gap-3 hover:bg-kaia-red hover:text-white transition-all"
+                      >
+                        <ShoppingBag size={18} />
+                        Make it happen
+                      </button>
+                    </div>
                   </div>
-                  <div className="p-8">
-                    <h3 className="text-2xl font-display text-kaia-charcoal mb-2">
-                      {product.name}
-                    </h3>
-                    <p className="text-kaia-red font-bold mb-6">
-                      Rp {product.price.toLocaleString()}
-                    </p>
-                    <button
-                      onClick={() => {
-                        // addToCart({ ...product, quantity: 1 });
-                        // setIsCartOpen(true);
-                        setSelectedProduct(product);
-                      }}
-                      className="w-full bg-kaia-cream text-kaia-charcoal py-4 rounded-xl font-bold flex items-center justify-center gap-3 hover:bg-kaia-red hover:text-white transition-all"
-                    >
-                      <ShoppingBag size={18} />
-                      Make it happen
-                    </button>
-                  </div>
-                </div>
-              ))}
-          </div>
+                ))}
+            </div>
+          </motion.div>
         )}
       </main>
       <ProductDetailModal
