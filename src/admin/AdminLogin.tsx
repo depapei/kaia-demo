@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
 import { Lock, User } from "lucide-react";
 import { useAdminLogin } from "../features/admin/useAdminLogin";
@@ -104,8 +104,14 @@ export default function AdminLogin() {
             type="submit"
             className="w-full bg-kaia-red text-white py-4 rounded-xl font-bold hover:bg-kaia-charcoal transition-all duration-300 shadow-lg"
           >
-            Enter Pantry
+            Enter Admin Panel
           </button>
+          <p className="text-center text-kaia-taupe text-sm">
+            Back to the website?{" "}
+            <Link to="/" className="text-kaia-red font-bold hover:underline">
+              Click Here
+            </Link>
+          </p>
         </form>
       </motion.div>
     </div>
