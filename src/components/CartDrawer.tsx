@@ -35,7 +35,7 @@ export default function CartDrawer({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-kaia-charcoal/60 backdrop-blur-sm z-200"
+            className="fixed inset-0 bg-kaia-charcoal/60 z-200"
           />
           <motion.div
             initial={{ x: "100%" }}
