@@ -1,4 +1,5 @@
 import { Instagram, Facebook, Mail, MapPin, Phone } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function Footer() {
   return (
@@ -73,12 +74,9 @@ export default function Footer() {
             <a href="#" className="hover:text-white transition-colors">
               Terms
             </a>
-            <a
-              href="/admin/login"
-              className="hover:text-white transition-colors"
-            >
+            <Link to="/admin" className="hover:text-white transition-colors">
               Admin
-            </a>
+            </Link>
           </div>
         </div>
       </div>
