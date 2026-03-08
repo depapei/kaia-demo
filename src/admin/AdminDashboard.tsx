@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import {
   LayoutDashboard,
   Package,
@@ -352,36 +352,83 @@ export default function AdminDashboard() {
       </main>
 
       {/* Product Modal */}
-      {isModalOpen && (
-        <div
-          className="fixed inset-0 bg-kaia-charcoal/60 z-50 flex items-center justify-center p-6"
-          onClick={() => setIsModalOpen(false)}
-        >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-white w-full max-w-2xl rounded-4xl p-10 shadow-2xl relative max-h-[90vh] overflow-y-auto"
+      <AnimatePresence>
+        {isModalOpen && (
+          <div
+            className="fixed inset-0 bg-kaia-charcoal/60 z-50 flex items-center justify-center p-6"
+            // onClick={() => setIsModalOpen(false)}
+            // aria-hidden="true"
           >
-            <button
-              onClick={() => setIsModalOpen(false)}
-              className="absolute top-6 right-6 text-kaia-taupe hover:text-kaia-red"
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-white w-full max-w-2xl rounded-4xl p-10 shadow-2xl relative max-h-[90vh] overflow-y-auto"
             >
-              <X size={24} />
-            </button>
-            <h3 className="text-5xl font-display text-kaia-charcoal mb-8">
-              {editingProduct ? "Edit Product" : "New Product"}
-            </h3>
-            <form onSubmit={handleSaveProduct} className="space-y-6">
-              <div className="grid grid-cols-2 gap-6">
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="absolute top-6 right-6 text-kaia-taupe hover:text-kaia-red"
+              >
+                <X size={24} />
+              </button>
+              <h3 className="text-5xl font-display text-kaia-charcoal mb-8">
+                {editingProduct ? "Edit Product" : "New Product"}
+              </h3>
+              <form onSubmit={handleSaveProduct} className="space-y-6">
+                <div className="grid grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-widest font-bold text-kaia-taupe mb-2">
+                      Name
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.name}
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
+                      className="w-full bg-kaia-cream/30 border border-kaia-tan/50 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-kaia-red/20"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-widest font-bold text-kaia-taupe mb-2">
+                      Price (IDR)
+                    </label>
+                    <input
+                      type="number"
+                      value={formData.price}
+                      onChange={(e) =>
+                        setFormData({ ...formData, price: e.target.value })
+                      }
+                      className="w-full bg-kaia-cream/30 border border-kaia-tan/50 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-kaia-red/20"
+                      required
+                    />
+                  </div>
+                </div>
                 <div>
                   <label className="block text-[10px] uppercase tracking-widest font-bold text-kaia-taupe mb-2">
-                    Name
+                    Category
+                  </label>
+                  <select
+                    value={formData.category}
+                    onChange={(e) =>
+                      setFormData({ ...formData, category: e.target.value })
+                    }
+                    className="w-full bg-kaia-cream/30 border border-kaia-tan/50 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-kaia-red/20"
+                  >
+                    <option value="Cakes">Cakes</option>
+                    <option value="Pastries">Pastries</option>
+                    <option value="Breads">Breads</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[10px] uppercase tracking-widest font-bold text-kaia-taupe mb-2">
+                    Short Description
                   </label>
                   <input
                     type="text"
-                    value={formData.name}
+                    value={formData.desc}
                     onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
+                      setFormData({ ...formData, desc: e.target.value })
                     }
                     className="w-full bg-kaia-cream/30 border border-kaia-tan/50 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-kaia-red/20"
                     required
@@ -389,206 +436,162 @@ export default function AdminDashboard() {
                 </div>
                 <div>
                   <label className="block text-[10px] uppercase tracking-widest font-bold text-kaia-taupe mb-2">
-                    Price (IDR)
+                    Long Description
+                  </label>
+                  <textarea
+                    value={formData.longDesc}
+                    onChange={(e) =>
+                      setFormData({ ...formData, longDesc: e.target.value })
+                    }
+                    className="w-full bg-kaia-cream/30 border border-kaia-tan/50 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-kaia-red/20 h-32"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] uppercase tracking-widest font-bold text-kaia-taupe mb-2">
+                    Image URL
                   </label>
                   <input
-                    type="number"
-                    value={formData.price}
+                    type="text"
+                    value={formData.image}
                     onChange={(e) =>
-                      setFormData({ ...formData, price: e.target.value })
+                      setFormData({ ...formData, image: e.target.value })
                     }
                     className="w-full bg-kaia-cream/30 border border-kaia-tan/50 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-kaia-red/20"
                     required
                   />
                 </div>
-              </div>
-              <div>
-                <label className="block text-[10px] uppercase tracking-widest font-bold text-kaia-taupe mb-2">
-                  Category
-                </label>
-                <select
-                  value={formData.category}
-                  onChange={(e) =>
-                    setFormData({ ...formData, category: e.target.value })
-                  }
-                  className="w-full bg-kaia-cream/30 border border-kaia-tan/50 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-kaia-red/20"
-                >
-                  <option value="Cakes">Cakes</option>
-                  <option value="Pastries">Pastries</option>
-                  <option value="Breads">Breads</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-[10px] uppercase tracking-widest font-bold text-kaia-taupe mb-2">
-                  Short Description
-                </label>
-                <input
-                  type="text"
-                  value={formData.desc}
-                  onChange={(e) =>
-                    setFormData({ ...formData, desc: e.target.value })
-                  }
-                  className="w-full bg-kaia-cream/30 border border-kaia-tan/50 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-kaia-red/20"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-[10px] uppercase tracking-widest font-bold text-kaia-taupe mb-2">
-                  Long Description
-                </label>
-                <textarea
-                  value={formData.longDesc}
-                  onChange={(e) =>
-                    setFormData({ ...formData, longDesc: e.target.value })
-                  }
-                  className="w-full bg-kaia-cream/30 border border-kaia-tan/50 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-kaia-red/20 h-32"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-[10px] uppercase tracking-widest font-bold text-kaia-taupe mb-2">
-                  Image URL
-                </label>
-                <input
-                  type="text"
-                  value={formData.image}
-                  onChange={(e) =>
-                    setFormData({ ...formData, image: e.target.value })
-                  }
-                  className="w-full bg-kaia-cream/30 border border-kaia-tan/50 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-kaia-red/20"
-                  required
-                />
-              </div>
 
-              {/* Slice Options Management */}
-              <div className="border-t border-kaia-tan/30 pt-6">
-                <div className="flex justify-between items-center mb-4">
-                  <label className="block text-[10px] uppercase tracking-widest font-bold text-kaia-taupe">
-                    Slice Options
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (noSliceOptions) {
-                        setFormData({
-                          ...formData,
-                          sliceOptions: [
-                            ...formData.sliceOptions,
-                            {
-                              slices: "Full",
-                              price: parseFloat(formData.price),
-                            },
-                          ],
-                        });
-                      } else {
-                        setFormData({
-                          ...formData,
-                          sliceOptions: [
-                            ...formData.sliceOptions,
-                            {
-                              slices: "",
-                              price: null,
-                            },
-                          ],
-                        });
-                      }
-                    }}
-                    className="text-kaia-red text-xs font-bold flex items-center gap-1 hover:underline"
-                  >
-                    <Plus size={14} /> Add Option
-                  </button>
-                </div>
-
-                <div className="space-y-3">
-                  {formData.sliceOptions.map((opt, index) => (
-                    <div
-                      key={index}
-                      className="flex gap-4 items-end bg-kaia-cream/20 p-4 rounded-xl border border-kaia-tan/20"
-                    >
-                      <div className="grow grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-[8px] uppercase tracking-widest font-bold text-kaia-taupe mb-1">
-                            Slices (e.g. 3, 10, Full)
-                          </label>
-                          <input
-                            type="text"
-                            value={opt.slices}
-                            onChange={(e) => {
-                              const newOptions = [...formData.sliceOptions];
-                              newOptions[index].slices = e.target.value;
-                              setFormData({
-                                ...formData,
-                                sliceOptions: newOptions,
-                              });
-                            }}
-                            className="w-full bg-white border border-kaia-tan/30 rounded-lg px-3 py-2 text-sm"
-                            placeholder="3 or Full"
-                            required
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-[8px] uppercase tracking-widest font-bold text-kaia-taupe mb-1">
-                            Price (IDR)
-                          </label>
-                          <input
-                            type="number"
-                            value={
-                              formData.price &&
-                              opt.slices.toUpperCase() === "FULL"
-                                ? formData.price
-                                : opt.price
-                            }
-                            onChange={(e) => {
-                              const newOptions = [...formData.sliceOptions];
-                              const newValue = e.target.value;
-                              newOptions[index].price =
-                                newValue !== 0 ? parseInt(newValue) : null;
-                              setFormData({
-                                ...formData,
-                                sliceOptions: newOptions,
-                              });
-                            }}
-                            className={`${opt.slices.toUpperCase() === "FULL" && "hover:cursor-not-allowed"} w-full bg-white border border-kaia-tan/30 rounded-lg px-3 py-2 text-sm`}
-                            disabled={opt.slices.toUpperCase() === "FULL"}
-                          />
-                        </div>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const newOptions = formData.sliceOptions.filter(
-                            (_, i) => i !== index,
-                          );
+                {/* Slice Options Management */}
+                <div className="border-t border-kaia-tan/30 pt-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <label className="block text-[10px] uppercase tracking-widest font-bold text-kaia-taupe">
+                      Slice Options
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (noSliceOptions) {
                           setFormData({
                             ...formData,
-                            sliceOptions: newOptions,
+                            sliceOptions: [
+                              ...formData.sliceOptions,
+                              {
+                                slices: "Full",
+                                price: parseFloat(formData.price),
+                              },
+                            ],
                           });
-                        }}
-                        className="p-2 text-kaia-taupe hover:text-kaia-red"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  ))}
-                  {formData.sliceOptions.length === 0 && (
-                    <p className="text-xs text-kaia-taupe italic text-center py-2">
-                      No slice options defined (standard product)
-                    </p>
-                  )}
-                </div>
-              </div>
+                        } else {
+                          setFormData({
+                            ...formData,
+                            sliceOptions: [
+                              ...formData.sliceOptions,
+                              {
+                                slices: "",
+                                price: null,
+                              },
+                            ],
+                          });
+                        }
+                      }}
+                      className="text-kaia-red text-xs font-bold flex items-center gap-1 hover:underline"
+                    >
+                      <Plus size={14} /> Add Option
+                    </button>
+                  </div>
 
-              <button
-                type="submit"
-                disabled={noSliceOptions}
-                className={`${noSliceOptions ? "hover:cursor-not-allowed bg-kaia-charcoal" : "bg-kaia-red"} w-full  text-white py-4 rounded-xl font-bold hover:bg-kaia-charcoal transition-all shadow-lg`}
-              >
-                {editingProduct ? "Update Product" : "Create Product"}
-              </button>
-            </form>
-          </motion.div>
-        </div>
-      )}
+                  <div className="space-y-3">
+                    {formData.sliceOptions.map((opt, index) => (
+                      <div
+                        key={index}
+                        className="flex gap-4 items-end bg-kaia-cream/20 p-4 rounded-xl border border-kaia-tan/20"
+                      >
+                        <div className="grow grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-[8px] uppercase tracking-widest font-bold text-kaia-taupe mb-1">
+                              Slices (e.g. 3, 10, Full)
+                            </label>
+                            <input
+                              type="text"
+                              value={opt.slices}
+                              onChange={(e) => {
+                                const newOptions = [...formData.sliceOptions];
+                                newOptions[index].slices = e.target.value;
+                                setFormData({
+                                  ...formData,
+                                  sliceOptions: newOptions,
+                                });
+                              }}
+                              className="w-full bg-white border border-kaia-tan/30 rounded-lg px-3 py-2 text-sm"
+                              placeholder="3 or Full"
+                              required
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[8px] uppercase tracking-widest font-bold text-kaia-taupe mb-1">
+                              Price (IDR)
+                            </label>
+                            <input
+                              type="number"
+                              value={
+                                formData.price &&
+                                opt.slices.toUpperCase() === "FULL"
+                                  ? formData.price
+                                  : opt.price
+                              }
+                              onChange={(e) => {
+                                const newOptions = [...formData.sliceOptions];
+                                const newValue = e.target.value;
+                                newOptions[index].price =
+                                  newValue !== 0 ? parseInt(newValue) : null;
+                                setFormData({
+                                  ...formData,
+                                  sliceOptions: newOptions,
+                                });
+                              }}
+                              className={`${opt.slices.toUpperCase() === "FULL" && "hover:cursor-not-allowed"} w-full bg-white border border-kaia-tan/30 rounded-lg px-3 py-2 text-sm`}
+                              disabled={opt.slices.toUpperCase() === "FULL"}
+                            />
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const newOptions = formData.sliceOptions.filter(
+                              (_, i) => i !== index,
+                            );
+                            setFormData({
+                              ...formData,
+                              sliceOptions: newOptions,
+                            });
+                          }}
+                          className="p-2 text-kaia-taupe hover:text-kaia-red"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    ))}
+                    {formData.sliceOptions.length === 0 && (
+                      <p className="text-xs text-kaia-taupe italic text-center py-2">
+                        No slice options defined (standard product)
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={noSliceOptions}
+                  className={`${noSliceOptions ? "hover:cursor-not-allowed bg-kaia-charcoal" : "bg-kaia-red"} w-full  text-white py-4 rounded-xl font-bold hover:bg-kaia-charcoal transition-all shadow-lg`}
+                >
+                  {editingProduct ? "Update Product" : "Create Product"}
+                </button>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
