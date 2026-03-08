@@ -161,7 +161,7 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-kaia-cream flex">
       {/* Sidebar */}
-      <aside className="w-64 bg-kaia-charcoal text-white p-8 flex flex-col">
+      <aside className="w-64 fixed h-screen bg-kaia-charcoal text-white p-8 flex flex-col">
         <div className="mb-12">
           <Link to="/" className="text-4xl font-display text-kaia-cream">
             kaia<span className="text-kaia-sage">pantry</span>
@@ -206,7 +206,7 @@ export default function AdminDashboard() {
       </aside>
 
       {/* Main Content */}
-      <main className="grow p-12 overflow-y-auto">
+      <main className="grow ms-64 p-12 overflow-y-auto">
         <header className="flex justify-between items-center mb-12">
           <h2 className="text-6xl font-display text-kaia-charcoal">
             {activeTab === "products"
