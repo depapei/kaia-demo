@@ -73,7 +73,10 @@ export default function Footer() {
             <a href="#" className="hover:text-white transition-colors">
               Terms
             </a>
-            <a href="/admin" className="hover:text-white transition-colors">
+            <a
+              href="/admin/login"
+              className="hover:text-white transition-colors"
+            >
               Admin
             </a>
           </div>
