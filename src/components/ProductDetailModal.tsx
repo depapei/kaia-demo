@@ -16,6 +16,30 @@ export default function ProductDetailModal({
 }: ProductDetailModalProps) {
   const { addToCart } = useCart();
 
+  const fnCheckObject = (obj: any) => {
+    return obj && typeof obj === "object" && Object.keys(obj).length > 0;
+  };
+
+  const isOpen = fnCheckObject(product);
+
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+      window.addEventListener("keydown", handleEscape);
+    } else {
+      document.body.style.overflow = "unset";
+    }
+
+    return () => {
+      document.body.style.overflow = "unset";
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, [isOpen, onClose]);
+
   const sliceOptions = useMemo(() => {
     if (!product?.sliceOptions) return [];
     return typeof product.sliceOptions === "string"
@@ -74,7 +98,7 @@ export default function ProductDetailModal({
 
   return (
     <AnimatePresence>
-      {product && (
+      {isOpen && (
         <>
           <motion.div
             initial={{ opacity: 0 }}
