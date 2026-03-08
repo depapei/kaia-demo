@@ -411,10 +411,10 @@ export default function CheckoutPage({ onBack }: CheckoutPageProps) {
                   <label className="text-[10px] uppercase tracking-widest font-bold text-kaia-taupe">
                     Shipping Address
                   </label>
-                  <input
+                  <textarea
                     required
                     name="address"
-                    type="text"
+                    rows={3}
                     className="w-full bg-kaia-cream/30 border border-kaia-tan/50 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-kaia-red/20 transition-all"
                     placeholder="123 Bakery St, Flour District"
                   />
