@@ -39,7 +39,7 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen flex flex-col bg-kaia-cream">
       <Navbar onCartClick={() => {}} onHomeClick={() => navigate("/")} />
-      <main className="grow flex items-center justify-center p-6 pt-32">
+      <main className="grow flex items-center justify-center p-6 py-32">
         <div className="bg-white p-10 rounded-[2.5rem] shadow-xl w-full max-w-md border border-kaia-tan/30">
           <h2 className="text-5xl font-display text-kaia-charcoal mb-2 text-center">
             Join Us
