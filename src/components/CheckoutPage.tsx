@@ -157,7 +157,7 @@ export default function CheckoutPage({ onBack }: CheckoutPageProps) {
           fillColor: [240, 232, 220], // Kaia Cream
         },
         columnStyles: {
-          0: { cellWidth: 70 },
+          0: { cellWidth: 60 },
           1: { halign: "center" },
           2: { halign: "center" },
           3: { halign: "right" },
