@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { AnimatePresence, motion } from "motion/react";
 import {
@@ -157,6 +157,14 @@ export default function AdminDashboard() {
       .replace("Rp", "Rp ");
   };
 
+  const token = localStorage.getItem("adminToken");
+  const user = useMemo(() => {
+    if (Object.keys(token).length > 0) {
+      const user = jwtDecode(token);
+      return user.sub;
+    }
+    return "?";
+  }, [token]);
   const noSliceOptions = formData.sliceOptions.length === 0;
   return (
     <div className="min-h-screen bg-kaia-cream flex">
@@ -166,6 +174,9 @@ export default function AdminDashboard() {
           <Link to="/" className="text-4xl font-display text-kaia-cream">
             kaia<span className="text-kaia-sage">pantry</span>
           </Link>
+          <p className="text-sm text-kaia-taupe uppercase tracking-widest mt-2">
+            Hello, {user}
+          </p>
           <p className="text-xs text-kaia-taupe uppercase tracking-widest mt-2">
             Admin Panel
           </p>
@@ -198,7 +209,7 @@ export default function AdminDashboard() {
 
         <button
           onClick={handleLogout}
-          className="flex items-center gap-4 px-4 py-3 text-kaia-taupe hover:text-kaia-red transition-all mt-auto"
+          className="flex items-center gap-4 px-4 py-3 text-kaia-taupe hover:text-white hover:bg-white/5 rounded-xl transition-all mt-auto"
         >
           <LogOut size={20} />
           <span className="font-bold tracking-wide">Logout</span>
