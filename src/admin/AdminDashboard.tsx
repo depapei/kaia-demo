@@ -336,15 +336,12 @@ export default function AdminDashboard() {
                         {tx.items !== undefined &&
                           tx.items !== null &&
                           tx.items.length > 0 &&
-                          tx.items
-                            .map((item: any) => (
-                              <li>
-                                (`${item.quantity}x ${item.name}$
-                                {item.slices ? ` (${item.slices} slices)` : ""}
-                                `)
-                              </li>
-                            ))
-                            .join(", ")}
+                          tx.items.map((item: any) => (
+                            <li>
+                              {item.quantity}x {item.name}
+                              {item.slices ? ` (${item.slices} slices)` : ""}
+                            </li>
+                          ))}
                       </td>
                     </tr>
                   ))}
