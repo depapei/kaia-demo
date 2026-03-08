@@ -5,6 +5,7 @@ import { useRegister } from "../features/auth/useRegister";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { motion } from "framer-motion";
+import CartDrawer from "../components/CartDrawer";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
@@ -14,6 +15,7 @@ export default function RegisterPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const registerMutation = useRegister();
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,7 +41,10 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-kaia-cream">
-      <Navbar onCartClick={() => {}} onHomeClick={() => navigate("/")} />
+      <Navbar
+        onCartClick={() => setIsCartOpen(true)}
+        onHomeClick={() => navigate("/")}
+      />
       <main className="grow flex items-center justify-center p-6 py-32">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -124,6 +129,11 @@ export default function RegisterPage() {
             </p>
           </motion.div>
         </motion.div>
+        <CartDrawer
+          isOpen={isCartOpen}
+          onClose={() => setIsCartOpen(false)}
+          onCheckout={() => navigate("/checkout")}
+        />
       </main>
       <Footer />
     </div>

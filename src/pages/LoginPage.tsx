@@ -6,11 +6,13 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { AxiosError } from "axios";
 import { motion } from "framer-motion";
+import CartDrawer from "../components/CartDrawer";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isCartOpen, setIsCartOpen] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
   const loginMutation = useLogin();
@@ -43,7 +45,10 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-kaia-cream">
-      <Navbar onCartClick={() => {}} onHomeClick={() => navigate("/")} />
+      <Navbar
+        onCartClick={() => setIsCartOpen(true)}
+        onHomeClick={() => navigate("/")}
+      />
       <main className="grow flex items-center justify-center p-6 py-32">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -114,6 +119,11 @@ export default function LoginPage() {
             </p>
           </motion.div>
         </motion.div>
+        <CartDrawer
+          isOpen={isCartOpen}
+          onClose={() => setIsCartOpen(false)}
+          onCheckout={() => navigate("/checkout")}
+        />
       </main>
       <Footer />
     </div>
