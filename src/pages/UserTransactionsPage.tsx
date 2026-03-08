@@ -6,6 +6,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import CartDrawer from "../components/CartDrawer";
 import { Receipt, Package, Calendar, MapPin } from "lucide-react";
+import { motion } from "motion/react";
 
 export default function UserTransactionsPage() {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -75,99 +76,106 @@ export default function UserTransactionsPage() {
           <div className="space-y-8">
             {transactions.length > 0 &&
               transactions.map((tx) => (
-                <div
-                  key={tx.id}
-                  className="bg-white rounded-[2.5rem] p-10 shadow-sm border border-kaia-tan/30"
+                <motion.div
+                  initial={{ opacity: 0, x: 50 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8 }}
                 >
-                  <div className="flex flex-wrap justify-between items-start gap-6 mb-8 pb-8 border-b border-kaia-tan/20">
-                    <div className="space-y-2">
-                      <p className="text-[10px] uppercase tracking-widest font-bold text-kaia-taupe">
-                        Order ID
-                      </p>
-                      <p className="text-sm font-mono text-kaia-charcoal">
-                        {tx.id}
-                      </p>
-                    </div>
-                    <div className="space-y-2">
-                      <p className="text-[10px] uppercase tracking-widest font-bold text-kaia-taupe">
-                        Date
-                      </p>
-                      <div className="flex items-center gap-2 text-kaia-charcoal">
-                        <Calendar size={14} />
-                        <p className="text-sm">
-                          {new Date(tx.createdAt).toLocaleDateString()}
+                  <div
+                    key={tx.id}
+                    className="bg-white rounded-[2.5rem] p-10 shadow-sm border border-kaia-tan/30"
+                  >
+                    <div className="flex flex-wrap justify-between items-start gap-6 mb-8 pb-8 border-b border-kaia-tan/20">
+                      <div className="space-y-2">
+                        <p className="text-[10px] uppercase tracking-widest font-bold text-kaia-taupe">
+                          Order ID
+                        </p>
+                        <p className="text-sm font-mono text-kaia-charcoal">
+                          {tx.id}
                         </p>
                       </div>
-                    </div>
-                    <div className="space-y-2">
-                      <p className="text-[10px] uppercase tracking-widest font-bold text-kaia-taupe">
-                        Status
-                      </p>
-                      <span className="bg-kaia-sage/20 text-yellow-600 font-bold py-1 rounded-full text-[10px] uppercase tracking-widest">
-                        {tx.status}
-                      </span>
-                    </div>
-                    <div className="space-y-2 text-right">
-                      <p className="text-[10px] uppercase tracking-widest font-bold text-kaia-taupe">
-                        Total Amount
-                      </p>
-                      <p className="text-2xl font-display text-kaia-red">
-                        {formatPrice(tx.totalPrice)}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-12">
-                    <div className="space-y-6">
-                      <div className="flex items-center gap-3 mb-4">
-                        <Package size={18} className="text-kaia-red" />
-                        <h3 className="text-lg font-bold text-kaia-charcoal">
-                          Items Ordered
-                        </h3>
+                      <div className="space-y-2">
+                        <p className="text-[10px] uppercase tracking-widest font-bold text-kaia-taupe">
+                          Date
+                        </p>
+                        <div className="flex items-center gap-2 text-kaia-charcoal">
+                          <Calendar size={14} />
+                          <p className="text-sm">
+                            {new Date(tx.createdAt).toLocaleDateString()}
+                          </p>
+                        </div>
                       </div>
-                      <div className="space-y-4">
-                        {tx.items !== null &&
-                          tx.items.length > 0 &&
-                          tx.items.map((item: any, idx: number) => (
-                            <div
-                              key={idx}
-                              className="flex justify-between text-sm"
-                            >
-                              <span className="text-kaia-charcoal">
-                                {item.quantity}x {item.name}
-                                {item.slices && (
-                                  <span className="text-kaia-taupe ml-2">
-                                    ({item.slices} slices)
-                                  </span>
-                                )}
-                              </span>
-                              <span className="font-bold text-kaia-charcoal">
-                                {formatPrice(item.price * item.quantity)}
-                              </span>
-                            </div>
-                          ))}
+                      <div className="space-y-2">
+                        <p className="text-[10px] uppercase tracking-widest font-bold text-kaia-taupe">
+                          Status
+                        </p>
+                        <span className="bg-kaia-sage/20 text-yellow-600 font-bold py-1 rounded-full text-[10px] uppercase tracking-widest">
+                          {tx.status}
+                        </span>
+                      </div>
+                      <div className="space-y-2 text-right">
+                        <p className="text-[10px] uppercase tracking-widest font-bold text-kaia-taupe">
+                          Total Amount
+                        </p>
+                        <p className="text-2xl font-display text-kaia-red">
+                          {formatPrice(tx.totalPrice)}
+                        </p>
                       </div>
                     </div>
 
-                    <div className="space-y-6">
-                      <div className="flex items-center gap-3 mb-4">
-                        <MapPin size={18} className="text-kaia-red" />
-                        <h3 className="text-lg font-bold text-kaia-charcoal">
-                          Delivery Details
-                        </h3>
+                    <div className="grid md:grid-cols-2 gap-12">
+                      <div className="space-y-6">
+                        <div className="flex items-center gap-3 mb-4">
+                          <Package size={18} className="text-kaia-red" />
+                          <h3 className="text-lg font-bold text-kaia-charcoal">
+                            Items Ordered
+                          </h3>
+                        </div>
+                        <div className="space-y-4">
+                          {tx.items !== null &&
+                            tx.items.length > 0 &&
+                            tx.items.map((item: any, idx: number) => (
+                              <div
+                                key={idx}
+                                className="flex justify-between text-sm"
+                              >
+                                <span className="text-kaia-charcoal">
+                                  {item.quantity}x {item.name}
+                                  {item.slices && (
+                                    <span className="text-kaia-taupe ml-2">
+                                      ({item.slices} slices)
+                                    </span>
+                                  )}
+                                </span>
+                                <span className="font-bold text-kaia-charcoal">
+                                  {formatPrice(item.price * item.quantity)}
+                                </span>
+                              </div>
+                            ))}
+                        </div>
                       </div>
-                      <div className="text-sm text-kaia-taupe space-y-1">
-                        <p className="font-bold text-kaia-charcoal">
-                          {tx.customerName}
-                        </p>
-                        <p>{tx.address}</p>
-                        <p>
-                          {tx.city}, {tx.postalCode}
-                        </p>
+
+                      <div className="space-y-6">
+                        <div className="flex items-center gap-3 mb-4">
+                          <MapPin size={18} className="text-kaia-red" />
+                          <h3 className="text-lg font-bold text-kaia-charcoal">
+                            Delivery Details
+                          </h3>
+                        </div>
+                        <div className="text-sm text-kaia-taupe space-y-1">
+                          <p className="font-bold text-kaia-charcoal">
+                            {tx.customerName}
+                          </p>
+                          <p>{tx.address}</p>
+                          <p>
+                            {tx.city}, {tx.postalCode}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               ))}
           </div>
         )}
