@@ -9,6 +9,7 @@ import {
   Routes,
   Route,
   useNavigate,
+  useLocation,
 } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
@@ -27,6 +28,7 @@ import OnboardingPage from "./pages/OnboardingPage";
 import FlyingItemsOverlay from "./components/FlyingItemsOverlay";
 import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
+import ScrollToTop from "./lib/ScrollToTop";
 
 function LandingPage() {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -92,6 +94,7 @@ export default function App() {
       <CartProvider>
         <FlyingItemsOverlay />
         <Router>
+          <ScrollToTop />
           <Routes>
             <Route path="/onboarding" element={<OnboardingPage />} />
             <Route path="/" element={<LandingPage />} />
@@ -103,6 +106,7 @@ export default function App() {
             <Route path="/orders" element={<UserTransactionsPage />} />
             <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin" element={<AdminDashboard />} />
           </Routes>
         </Router>
       </CartProvider>

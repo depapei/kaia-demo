@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useLogin } from "../features/auth/useLogin";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { AxiosError } from "axios";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -10,31 +12,38 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const { login } = useAuth();
   const navigate = useNavigate();
+  const loginMutation = useLogin();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      const res = await fetch("/api/user/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        login(data.user);
-        navigate("/");
-      } else {
-        setError(data.message);
-      }
-    } catch (err) {
-      setError("Something went wrong");
-    }
+    setError("");
+
+    loginMutation.mutate(
+      { email, password },
+      {
+        onSuccess: (data) => {
+          if (data.success) {
+            login(data.userData);
+            navigate("/");
+          } else {
+            setError(data.message);
+          }
+        },
+        onError: (err: AxiosError) => {
+          type response = {
+            message?: string;
+          };
+          const response: response = err.response.data;
+          setError(response.message);
+        },
+      },
+    );
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-kaia-cream">
       <Navbar onCartClick={() => {}} onHomeClick={() => navigate("/")} />
-      <main className="grow flex items-center justify-center p-6 pt-32">
+      <main className="grow flex items-center justify-center p-6 py-32">
         <div className="bg-white p-10 rounded-[2.5rem] shadow-xl w-full max-w-md border border-kaia-tan/30">
           <h2 className="text-5xl font-display text-kaia-charcoal mb-2 text-center">
             Welcome Back
@@ -44,7 +53,9 @@ export default function LoginPage() {
           </p>
 
           {error && (
-            <p className="text-kaia-red text-center mb-4 font-bold">{error}</p>
+            <p className="animate-pulse text-kaia-red text-center mb-4 font-bold">
+              {error}
+            </p>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -55,6 +66,7 @@ export default function LoginPage() {
               <input
                 type="email"
                 value={email}
+                placeholder="john.doe@email.com"
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full bg-kaia-cream/30 border border-kaia-tan/50 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-kaia-red/20"
                 required
@@ -67,6 +79,7 @@ export default function LoginPage() {
               <input
                 type="password"
                 value={password}
+                placeholder="***"
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full bg-kaia-cream/30 border border-kaia-tan/50 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-kaia-red/20"
                 required

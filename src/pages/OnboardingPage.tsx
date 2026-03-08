@@ -123,7 +123,7 @@ export default function OnboardingPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
-              className="bg-white/10 backdrop-blur-md border border-white/20 p-8 rounded-[2rem] max-w-xl mx-auto"
+              className="bg-white/10 backdrop-blur-md border border-white/20 p-8 rounded-4xl max-w-xl mx-auto"
             >
               <p className="text-white/90 text-lg font-light leading-relaxed">
                 {SLIDES[currentSlide].description}

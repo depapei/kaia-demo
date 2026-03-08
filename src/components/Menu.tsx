@@ -1,21 +1,32 @@
-import React, { useState, useEffect, useMemo } from "react";
-import { motion, AnimatePresence } from "motion/react";
-import { useCart, MenuItem } from "../context/CartContext";
+import { Check, Heart, Info, Search, ShoppingBag } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+import React, { useMemo, useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
+import { MenuItem, useCart } from "../context/CartContext";
+import { useProducts } from "../features/products/useProducts";
+import { useCreateWishlist } from "../features/wishlists/useCreateWishlist";
+import { useDeleteWishlist } from "../features/wishlists/useDeleteWishlist";
+import { useWishlists } from "../features/wishlists/useWishlists";
 import ProductDetailModal from "./ProductDetailModal";
-import { Info, Search, Check, Heart, ShoppingBag } from "lucide-react";
 
 const CATEGORIES = ["All", "Cakes", "Pastries", "Breads"];
 
 interface MenuCardProps {
   item: MenuItem;
   onInfoClick: (item: MenuItem) => void;
+  isWishlisted: boolean;
 }
 
-const MenuCard: React.FC<MenuCardProps> = ({ item, onInfoClick }) => {
+export const MenuCard: React.FC<MenuCardProps> = ({
+  item,
+  onInfoClick,
+  isWishlisted,
+}) => {
   const { addToCart } = useCart();
   const { user, isAuthenticated } = useAuth();
   const [isAdded, setIsAdded] = useState(false);
+  const createWishlist = useCreateWishlist();
+  const deleteWishlist = useDeleteWishlist();
 
   const sliceOptions = useMemo(() => {
     if (!item.sliceOptions) return [];
@@ -26,46 +37,24 @@ const MenuCard: React.FC<MenuCardProps> = ({ item, onInfoClick }) => {
 
   const [selectedSlices, setSelectedSlices] = useState<
     number | string | undefined
-  >(sliceOptions.length > 0 ? sliceOptions[0].slices : undefined);
-
-  const [isWishlisted, setIsWishlisted] = useState(false);
-
-  useEffect(() => {
-    if (isAuthenticated && user) {
-      checkWishlist();
-    }
-  }, [isAuthenticated, user]);
+  >(sliceOptions.length > 0 ? sliceOptions[0].id : undefined);
 
   const currentPrice = useMemo(() => {
     if (!selectedSlices || sliceOptions.length === 0) return item.price;
-    const option = sliceOptions.find(
-      (opt: any) => opt.slices === selectedSlices,
-    );
+    const option = sliceOptions.find((opt: any) => opt.id === selectedSlices);
     return option ? option.price : item.price;
   }, [selectedSlices, sliceOptions, item.price]);
 
-  const checkWishlist = async () => {
-    const res = await fetch(`/api/wishlist/${user?.id}`);
-    const data = await res.json();
-    setIsWishlisted(data.some((p: any) => p.id === item.id));
-  };
-
   const toggleWishlist = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!isAuthenticated) {
+    if (!isAuthenticated || !user) {
       alert("Please login to add to wishlist");
       return;
     }
     if (isWishlisted) {
-      await fetch(`/api/wishlist/${user?.id}/${item.id}`, { method: "DELETE" });
-      setIsWishlisted(false);
+      deleteWishlist.mutate({ user_id: user.id, product_id: item.id });
     } else {
-      await fetch("/api/wishlist", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: user?.id, productId: item.id }),
-      });
-      setIsWishlisted(true);
+      createWishlist.mutate({ userId: user.id, productId: item.id });
     }
   };
 
@@ -81,7 +70,14 @@ const MenuCard: React.FC<MenuCardProps> = ({ item, onInfoClick }) => {
 
   const handleAdd = (e: React.MouseEvent) => {
     const startPos = { x: e.clientX, y: e.clientY };
-    addToCart({ ...item, price: currentPrice }, selectedSlices, startPos);
+    const sliceObj = sliceOptions.filter(
+      (slice) => slice.id === selectedSlices,
+    )[0];
+    addToCart(
+      { ...item, id: sliceObj.id, price: currentPrice },
+      sliceObj.slices,
+      startPos,
+    );
     setIsAdded(true);
     setTimeout(() => setIsAdded(false), 2000);
   };
@@ -145,23 +141,26 @@ const MenuCard: React.FC<MenuCardProps> = ({ item, onInfoClick }) => {
 
         {sliceOptions.length > 0 && (
           <div className="mb-6">
-            <p className="text-[10px] uppercase tracking-widest font-bold text-kaia-taupe mb-3">
-              Select Slices
-            </p>
+            {sliceOptions.length > 1 && (
+              <p className="text-[10px] uppercase tracking-widest font-bold text-kaia-taupe mb-3">
+                Select Slices
+              </p>
+            )}
             <div className="flex flex-wrap gap-2">
-              {sliceOptions.map((opt: any) => (
-                <button
-                  key={opt.slices}
-                  onClick={() => setSelectedSlices(opt.slices)}
-                  className={`flex-1 min-w-15 py-2 rounded-xl text-xs font-bold transition-all border ${
-                    selectedSlices === opt.slices
-                      ? "bg-kaia-red border-kaia-red text-white shadow-md"
-                      : "bg-kaia-cream/50 border-kaia-tan/30 text-kaia-taupe hover:border-kaia-tan"
-                  }`}
-                >
-                  {opt.slices}
-                </button>
-              ))}
+              {sliceOptions.length > 1 &&
+                sliceOptions.map((opt: any) => (
+                  <button
+                    key={opt.slices}
+                    onClick={() => setSelectedSlices(opt.id)}
+                    className={`flex-1 min-w-15 py-2 rounded-xl text-xs font-bold transition-all border ${
+                      selectedSlices === opt.id
+                        ? "bg-kaia-red border-kaia-red text-white shadow-md"
+                        : "bg-kaia-cream/50 border-kaia-tan/30 text-kaia-taupe hover:border-kaia-tan"
+                    }`}
+                  >
+                    {opt.slices}
+                  </button>
+                ))}
             </div>
           </div>
         )}
@@ -197,39 +196,28 @@ const MenuCard: React.FC<MenuCardProps> = ({ item, onInfoClick }) => {
 };
 
 export default function Menu() {
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const { user } = useAuth();
+  const { data: menuItems = [], isLoading: productsLoading } = useProducts();
+  const { data: wishlistItems = [] } = useWishlists(user?.id);
+
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedProduct, setSelectedProduct] = useState<MenuItem | null>(null);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // fetch("/api/products")
-    //   .then((res) => res.json())
-    //   .then((data) => {
-    //     setMenuItems(db_product_dummy);
-    //     setLoading(false);
-    //   })
-    //   .catch((err) => {
-    //     console.error("Failed to fetch products", err);
-    //     setLoading(false);
-    //   });
-    setMenuItems(db_product_dummy);
-    setLoading(false);
-  }, []);
+  const filteredItems =
+    menuItems.length > 0 &&
+    menuItems.filter((item: MenuItem) => {
+      const matchesCategory =
+        activeCategory === "All" || item.category === activeCategory;
+      const matchesSearch =
+        item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.desc.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesCategory && matchesSearch;
+    });
 
-  const filteredItems = menuItems.filter((item) => {
-    const matchesCategory =
-      activeCategory === "All" || item.category === activeCategory;
-    const matchesSearch =
-      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.desc.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
-
-  if (loading) {
+  if (productsLoading) {
     return (
-      <div className="py-24 text-center">
+      <div className="py-24 text-center animate-pulse">
         <p className="font-script text-3xl text-kaia-taupe">
           Preparing the pantry...
         </p>
@@ -290,13 +278,18 @@ export default function Menu() {
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10"
         >
           <AnimatePresence mode="popLayout">
-            {filteredItems.map((item) => (
-              <MenuCard
-                key={item.id}
-                item={item}
-                onInfoClick={setSelectedProduct}
-              />
-            ))}
+            {filteredItems.length > 0 &&
+              filteredItems.map((item: MenuItem) => (
+                <MenuCard
+                  key={item.id}
+                  item={item}
+                  onInfoClick={setSelectedProduct}
+                  isWishlisted={
+                    wishlistItems !== null &&
+                    wishlistItems.some((w: any) => w.id === item.id)
+                  }
+                />
+              ))}
           </AnimatePresence>
         </motion.div>
 
@@ -316,56 +309,3 @@ export default function Menu() {
     </section>
   );
 }
-
-export const db_product_dummy = [
-  {
-    id: "vanila-cake",
-    name: "Vanila Cake",
-    price: 200000,
-    category: "Cakes",
-    desc: "Perpaduan Vanila dengan buah - buahan",
-    longDesc:
-      "A timeless classic. Our Vanilla Cake features three layers of moist, Madagascar vanilla bean sponge, filled with fresh seasonal fruits and enveloped in a light, whipped cream frosting.",
-    image:
-      "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?auto=format&fit=crop&q=80&w=800",
-    sliceOptions:
-      '[{"slices":"Full","price":200000},{"slices":10,"price":180000},{"slices":4,"price":80000},{"slices":3,"price":65000}]',
-  },
-  {
-    id: "chocolate-cake",
-    name: "Chocolate Cake",
-    price: 150000,
-    category: "Cakes",
-    desc: "Perpaduan Coklat dengan buah - buahan",
-    longDesc:
-      "Indulge in pure decadence. Rich 70% dark chocolate ganache layered between moist cocoa sponge, topped with a medley of fresh berries for a perfect balance of sweetness and tartness.",
-    image:
-      "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&q=80&w=800",
-    sliceOptions:
-      '[{"slices":"Full","price":150000},{"slices":10,"price":135000},{"slices":4,"price":60000},{"slices":3,"price":50000}]',
-  },
-  {
-    id: "cupcake",
-    name: "Cupcake",
-    price: 110000,
-    category: "Pastries",
-    desc: "Cupcake Coklat dan chococips",
-    longDesc:
-      "Bite-sized perfection. Our signature chocolate cupcakes are studded with Belgian chocolate chips and topped with a silky smooth chocolate buttercream swirl.",
-    image:
-      "https://images.unsplash.com/photo-1576618148400-f54bed99fcfd?auto=format&fit=crop&q=80&w=800",
-    sliceOptions: null,
-  },
-  {
-    id: "sourdough-loaf",
-    name: "Artisan Sourdough",
-    price: 85000,
-    category: "Breads",
-    desc: "48-hour fermented rustic loaf",
-    longDesc:
-      "Our pride and joy. A crusty, rustic loaf with a soft, airy crumb and that signature sourdough tang. Made with just flour, water, salt, and 30 years of tradition.",
-    image:
-      "https://images.unsplash.com/photo-1549931319-a545dcf3bc73?auto=format&fit=crop&q=80&w=800",
-    sliceOptions: null,
-  },
-];

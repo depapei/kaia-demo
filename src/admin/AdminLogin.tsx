@@ -2,51 +2,70 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
 import { Lock, User } from "lucide-react";
+import { useAdminLogin } from "../features/admin/useAdminLogin";
+
+export interface Token {
+  user_id: string;
+  user_email: string;
+  user_name: string;
+  sub: string;
+}
 
 export default function AdminLogin() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const adminLoginMutation = useAdminLogin();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
-      });
-      const data = await response.json();
-      if (data.success) {
-        localStorage.setItem("adminToken", data.token);
-        navigate("/admin/dashboard");
-      } else {
-        setError(data.message);
-      }
-    } catch (err) {
-      setError("Login failed. Please try again.");
-    }
+    setError("");
+    adminLoginMutation.mutate(
+      { username, password },
+      {
+        onSuccess: (data) => {
+          if (data.success) {
+            localStorage.setItem("adminToken", data.token);
+            navigate("/admin/dashboard");
+          } else {
+            setError(data.message);
+          }
+        },
+        onError: () => {
+          setError("Login failed. Please try again.");
+        },
+      },
+    );
   };
 
   return (
     <div className="min-h-screen bg-kaia-cream flex items-center justify-center p-6">
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-md w-full bg-white rounded-[2rem] p-10 shadow-xl border border-kaia-tan/30"
+        className="max-w-md w-full bg-white rounded-4xl p-10 shadow-xl border border-kaia-tan/30"
       >
         <div className="text-center mb-10">
-          <h1 className="text-5xl font-display text-kaia-charcoal mb-2">Admin Login</h1>
-          <p className="text-kaia-taupe font-script text-2xl">kaiapantry management</p>
+          <h1 className="text-5xl font-display text-kaia-charcoal mb-2">
+            Admin Login
+          </h1>
+          <p className="text-kaia-taupe font-script text-2xl">
+            kaiapantry management
+          </p>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-6">
           <div>
-            <label className="block text-xs uppercase tracking-widest font-bold text-kaia-taupe mb-2 ml-1">Username</label>
+            <label className="block text-xs uppercase tracking-widest font-bold text-kaia-taupe mb-2 ml-1">
+              Username
+            </label>
             <div className="relative">
-              <User className="absolute left-4 top-1/2 -translate-y-1/2 text-kaia-taupe" size={18} />
-              <input 
+              <User
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-kaia-taupe"
+                size={18}
+              />
+              <input
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
@@ -57,10 +76,15 @@ export default function AdminLogin() {
           </div>
 
           <div>
-            <label className="block text-xs uppercase tracking-widest font-bold text-kaia-taupe mb-2 ml-1">Password</label>
+            <label className="block text-xs uppercase tracking-widest font-bold text-kaia-taupe mb-2 ml-1">
+              Password
+            </label>
             <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-kaia-taupe" size={18} />
-              <input 
+              <Lock
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-kaia-taupe"
+                size={18}
+              />
+              <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -70,9 +94,13 @@ export default function AdminLogin() {
             </div>
           </div>
 
-          {error && <p className="text-kaia-red text-sm text-center font-medium">{error}</p>}
+          {error && (
+            <p className="text-kaia-red text-sm text-center font-medium">
+              {error}
+            </p>
+          )}
 
-          <button 
+          <button
             type="submit"
             className="w-full bg-kaia-red text-white py-4 rounded-xl font-bold hover:bg-kaia-charcoal transition-all duration-300 shadow-lg"
           >

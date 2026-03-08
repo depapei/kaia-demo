@@ -58,13 +58,22 @@ export default function Hero() {
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </a>
           <a
-            href="about"
+            href="#about"
             className="inline-flex items-center justify-center gap-2 bg-white text-kaia-charcoal border-2 border-kaia-tan px-10 py-4 rounded-2xl text-lg font-bold hover:bg-kaia-cream transition-all duration-300"
           >
             Our Story
           </a>
         </motion.div>
       </div>
+
+      {/* <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.2, duration: 1 }}
+        className="absolute bottom-10 left-1/2 -translate-x-1/2"
+      >
+        <div className="w-px h-16 bg-kaia-red/30 animate-pulse" />
+      </motion.div> */}
     </section>
   );
 }

@@ -11,6 +11,14 @@ import {
   Edit2,
   X,
 } from "lucide-react";
+import {
+  useAdminProducts,
+  useCreateAdminProduct,
+} from "../features/admin/useAdminProducts";
+import { useAdminTransactions } from "../features/admin/useAdminTransactions";
+import api from "../api/axios";
+import { jwtDecode } from "jwt-decode";
+import { Token } from "./AdminLogin";
 
 interface Product {
   id: string;
@@ -39,8 +47,6 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<"products" | "transactions">(
     "products",
   );
-  const [products, setProducts] = useState<Product[]>([]);
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [formData, setFormData] = useState({
@@ -54,51 +60,40 @@ export default function AdminDashboard() {
   });
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const token = localStorage.getItem("adminToken");
-    if (!token) {
-      navigate("/admin/login");
-      return;
-    }
-    fetchProducts();
-    fetchTransactions();
-  }, [navigate]);
-
-  const fetchProducts = async () => {
-    const res = await fetch("/api/products");
-    const data = await res.json();
-    setProducts(data);
-  };
-
-  const fetchTransactions = async () => {
-    const res = await fetch("/api/transactions");
-    const data = await res.json();
-    setTransactions(data);
-  };
+  const { data: products = [], refetch: refetchProducts } = useAdminProducts();
+  const { data: transactions = [] } = useAdminTransactions();
+  const createProductMutation = useCreateAdminProduct();
 
   const handleLogout = () => {
     localStorage.removeItem("adminToken");
     navigate("/admin/login");
   };
 
+  useEffect(() => {
+    const token = localStorage.getItem("adminToken");
+    if (!token) {
+      navigate("/admin/login");
+    }
+  }, []);
+
   const handleSaveProduct = async (e: React.FormEvent) => {
     e.preventDefault();
-    const url = editingProduct
-      ? `/api/products/${editingProduct.id}`
-      : "/api/products";
-    const method = editingProduct ? "PUT" : "POST";
 
-    await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        ...formData,
-        price: parseInt(formData.price),
-        sliceOptions:
-          formData.sliceOptions.length > 0 ? formData.sliceOptions : null,
-      }),
-    });
+    const adminToken = jwtDecode<Token>(localStorage.getItem("adminToken"));
+    const productData = {
+      ...formData,
+      price: parseInt(formData.price),
+      sliceOptions:
+        formData.sliceOptions.length > 0 ? formData.sliceOptions : null,
+      createdBy: adminToken.user_id,
+    };
+
+    if (editingProduct) {
+      await api.put(`/admin/products/${editingProduct.id}`, productData);
+      refetchProducts();
+    } else {
+      createProductMutation.mutate(productData);
+    }
 
     setIsModalOpen(false);
     setEditingProduct(null);
@@ -111,15 +106,14 @@ export default function AdminDashboard() {
       image: "",
       sliceOptions: [],
     });
-    fetchProducts();
   };
 
   const handleDeleteProduct = async (id: string) => {
     if (confirm("Are you sure you want to delete this product?")) {
       try {
-        const res = await fetch(`/api/products/${id}`, { method: "DELETE" });
-        if (res.ok) {
-          fetchProducts();
+        const res = await api.delete(`/admin/products/${id}`);
+        if (res.status === 200) {
+          refetchProducts();
         } else {
           alert("Failed to delete product. Please try again.");
         }
@@ -140,6 +134,7 @@ export default function AdminDashboard() {
           : product.sliceOptions;
     }
     setFormData({
+      id: product.id,
       name: product.name,
       price: product.price.toString(),
       category: product.category,
@@ -161,6 +156,7 @@ export default function AdminDashboard() {
       .replace("Rp", "Rp ");
   };
 
+  const noSliceOptions = formData.sliceOptions.length === 0;
   return (
     <div className="min-h-screen bg-kaia-cream flex">
       {/* Sidebar */}
@@ -233,50 +229,52 @@ export default function AdminDashboard() {
 
         {activeTab === "products" ? (
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-            {products.map((product) => (
-              <div
-                key={product.id}
-                className="bg-white p-6 rounded-3xl shadow-sm border border-kaia-tan/30 flex gap-6 items-center"
-              >
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-24 h-24 object-cover rounded-2xl"
-                />
-                <div className="grow">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <span className="text-[10px] uppercase tracking-widest font-bold text-kaia-red">
-                        {product.category}
+            {products !== null &&
+              products.length > 0 &&
+              products.map((product) => (
+                <div
+                  key={product.id}
+                  className="bg-white p-6 rounded-3xl shadow-sm border border-kaia-tan/30 flex gap-6 items-center"
+                >
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-24 h-24 object-cover rounded-2xl"
+                  />
+                  <div className="grow">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <span className="text-[10px] uppercase tracking-widest font-bold text-kaia-red">
+                          {product.category}
+                        </span>
+                        <h3 className="text-2xl font-display text-kaia-charcoal">
+                          {product.name}
+                        </h3>
+                      </div>
+                      <span className="font-display text-xl text-kaia-taupe">
+                        {formatPrice(product.price)}
                       </span>
-                      <h3 className="text-2xl font-display text-kaia-charcoal">
-                        {product.name}
-                      </h3>
                     </div>
-                    <span className="font-display text-xl text-kaia-taupe">
-                      {formatPrice(product.price)}
-                    </span>
+                    <p className="text-sm text-kaia-taupe line-clamp-1 mt-1 italic">
+                      "{product.desc}"
+                    </p>
                   </div>
-                  <p className="text-sm text-kaia-taupe line-clamp-1 mt-1 italic">
-                    "{product.desc}"
-                  </p>
+                  <div className="flex flex-col gap-2">
+                    <button
+                      onClick={() => openEditModal(product)}
+                      className="p-2 bg-kaia-cream text-kaia-taupe hover:text-kaia-red rounded-lg transition-colors"
+                    >
+                      <Edit2 size={18} />
+                    </button>
+                    <button
+                      onClick={() => handleDeleteProduct(product.id)}
+                      className="p-2 bg-kaia-cream text-kaia-taupe hover:text-kaia-red rounded-lg transition-colors"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
                 </div>
-                <div className="flex flex-col gap-2">
-                  <button
-                    onClick={() => openEditModal(product)}
-                    className="p-2 bg-kaia-cream text-kaia-taupe hover:text-kaia-red rounded-lg transition-colors"
-                  >
-                    <Edit2 size={18} />
-                  </button>
-                  <button
-                    onClick={() => handleDeleteProduct(product.id)}
-                    className="p-2 bg-kaia-cream text-kaia-taupe hover:text-kaia-red rounded-lg transition-colors"
-                  >
-                    <Trash2 size={18} />
-                  </button>
-                </div>
-              </div>
-            ))}
+              ))}
           </div>
         ) : (
           <div className="bg-white rounded-3xl shadow-sm border border-kaia-tan/30 overflow-hidden">
@@ -304,44 +302,52 @@ export default function AdminDashboard() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-kaia-tan/20">
-                {transactions.map((tx) => (
-                  <tr
-                    key={tx.id}
-                    className="hover:bg-kaia-cream/20 transition-colors"
-                  >
-                    <td className="px-6 py-4 text-xs font-mono text-kaia-taupe">
-                      {tx.id.split("-")[0]}...
-                    </td>
-                    <td className="px-6 py-4 text-sm text-kaia-charcoal">
-                      {new Date(tx.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm font-bold text-kaia-charcoal">
-                        {tx.customerName}
-                      </div>
-                      <div className="text-xs text-kaia-taupe">
-                        {tx.customerEmail}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-xs text-kaia-taupe max-w-50">
-                      <div className="truncate font-bold">{tx.address}</div>
-                      <div>
-                        {tx.city}, {tx.postalCode}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-sm font-bold text-kaia-red">
-                      {formatPrice(tx.totalPrice)}
-                    </td>
-                    <td className="px-6 py-4 text-xs text-kaia-taupe">
-                      {JSON.parse(tx.items)
-                        .map(
-                          (item: any) =>
-                            `${item.quantity}x ${item.name}${item.slices ? ` (${item.slices} slices)` : ""}`,
-                        )
-                        .join(", ")}
-                    </td>
-                  </tr>
-                ))}
+                {transactions !== null &&
+                  transactions.length > 0 &&
+                  transactions.map((tx) => (
+                    <tr
+                      key={tx.id}
+                      className="hover:bg-kaia-cream/20 transition-colors"
+                    >
+                      <td className="px-6 py-4 text-xs font-mono text-kaia-taupe">
+                        {tx.id.split("-")[0]}...
+                      </td>
+                      <td className="px-6 py-4 text-sm text-kaia-charcoal">
+                        {new Date(tx.createdAt).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="text-sm font-bold text-kaia-charcoal">
+                          {tx.customerName}
+                        </div>
+                        <div className="text-xs text-kaia-taupe">
+                          {tx.customerEmail}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-xs text-kaia-taupe max-w-50">
+                        <div className="truncate font-bold">{tx.address}</div>
+                        <div>
+                          {tx.city}, {tx.postalCode}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-sm font-bold text-kaia-red">
+                        {formatPrice(tx.totalPrice)}
+                      </td>
+                      <td className="px-6 py-4 text-xs text-kaia-taupe">
+                        {tx.items !== undefined &&
+                          tx.items !== null &&
+                          tx.items.length > 0 &&
+                          tx.items
+                            .map((item: any) => (
+                              <li>
+                                (`${item.quantity}x ${item.name}$
+                                {item.slices ? ` (${item.slices} slices)` : ""}
+                                `)
+                              </li>
+                            ))
+                            .join(", ")}
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>
@@ -462,15 +468,31 @@ export default function AdminDashboard() {
                   </label>
                   <button
                     type="button"
-                    onClick={() =>
-                      setFormData({
-                        ...formData,
-                        sliceOptions: [
-                          ...formData.sliceOptions,
-                          { slices: "Full", price: formData.price },
-                        ],
-                      })
-                    }
+                    onClick={() => {
+                      if (noSliceOptions) {
+                        setFormData({
+                          ...formData,
+                          sliceOptions: [
+                            ...formData.sliceOptions,
+                            {
+                              slices: "Full",
+                              price: parseFloat(formData.price),
+                            },
+                          ],
+                        });
+                      } else {
+                        setFormData({
+                          ...formData,
+                          sliceOptions: [
+                            ...formData.sliceOptions,
+                            {
+                              slices: "",
+                              price: null,
+                            },
+                          ],
+                        });
+                      }
+                    }}
                     className="text-kaia-red text-xs font-bold flex items-center gap-1 hover:underline"
                   >
                     <Plus size={14} /> Add Option
@@ -501,6 +523,7 @@ export default function AdminDashboard() {
                             }}
                             className="w-full bg-white border border-kaia-tan/30 rounded-lg px-3 py-2 text-sm"
                             placeholder="3 or Full"
+                            required
                           />
                         </div>
                         <div>
@@ -525,7 +548,7 @@ export default function AdminDashboard() {
                                 sliceOptions: newOptions,
                               });
                             }}
-                            className="w-full bg-white border border-kaia-tan/30 rounded-lg px-3 py-2 text-sm"
+                            className={`${opt.slices.toUpperCase() === "FULL" && "hover:cursor-not-allowed"} w-full bg-white border border-kaia-tan/30 rounded-lg px-3 py-2 text-sm`}
                             disabled={opt.slices.toUpperCase() === "FULL"}
                           />
                         </div>
@@ -557,7 +580,8 @@ export default function AdminDashboard() {
 
               <button
                 type="submit"
-                className="w-full bg-kaia-red text-white py-4 rounded-xl font-bold hover:bg-kaia-charcoal transition-all shadow-lg"
+                disabled={noSliceOptions}
+                className={`${noSliceOptions ? "hover:cursor-not-allowed bg-kaia-charcoal" : "bg-kaia-red"} w-full  text-white py-4 rounded-xl font-bold hover:bg-kaia-charcoal transition-all shadow-lg`}
               >
                 {editingProduct ? "Update Product" : "Create Product"}
               </button>

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useRegister } from "../features/auth/useRegister";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
@@ -11,25 +12,28 @@ export default function RegisterPage() {
   const [error, setError] = useState("");
   const { login } = useAuth();
   const navigate = useNavigate();
+  const registerMutation = useRegister();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      const res = await fetch("/api/user/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, name }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        login(data.user);
-        navigate("/");
-      } else {
-        setError(data.message);
-      }
-    } catch (err) {
-      setError("Something went wrong");
-    }
+    setError("");
+
+    registerMutation.mutate(
+      { email, password, name },
+      {
+        onSuccess: (data) => {
+          if (data.success) {
+            login(data.user);
+            navigate("/");
+          } else {
+            setError(data.message);
+          }
+        },
+        onError: () => {
+          setError("Something went wrong");
+        },
+      },
+    );
   };
 
   return (
@@ -56,6 +60,7 @@ export default function RegisterPage() {
               <input
                 type="text"
                 value={name}
+                placeholder="John Doe"
                 onChange={(e) => setName(e.target.value)}
                 className="w-full bg-kaia-cream/30 border border-kaia-tan/50 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-kaia-red/20"
                 required
@@ -68,6 +73,7 @@ export default function RegisterPage() {
               <input
                 type="email"
                 value={email}
+                placeholder="john.doe@email.com"
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full bg-kaia-cream/30 border border-kaia-tan/50 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-kaia-red/20"
                 required
@@ -80,6 +86,7 @@ export default function RegisterPage() {
               <input
                 type="password"
                 value={password}
+                placeholder="***"
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full bg-kaia-cream/30 border border-kaia-tan/50 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-kaia-red/20"
                 required

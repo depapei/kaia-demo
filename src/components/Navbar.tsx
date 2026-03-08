@@ -20,7 +20,7 @@ export default function Navbar({ onCartClick, onHomeClick }: NavbarProps) {
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
     damping: 30,
-    restDelta: 0.001
+    restDelta: 0.001,
   });
 
   useEffect(() => {
@@ -33,56 +33,73 @@ export default function Navbar({ onCartClick, onHomeClick }: NavbarProps) {
 
   return (
     <>
-      <motion.nav 
+      <motion.nav
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 px-6 py-4 ${
-          isScrolled ? "bg-white/90 backdrop-blur-md shadow-md py-3" : "bg-transparent"
+          isScrolled
+            ? "bg-white/90 backdrop-blur-md shadow-md py-3"
+            : "bg-transparent"
         }`}
       >
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <button onClick={onHomeClick} className="text-4xl font-display text-kaia-charcoal tracking-tighter">
+          <button
+            onClick={onHomeClick}
+            className="text-4xl font-display text-kaia-charcoal tracking-tighter"
+          >
             kaia<span className="text-kaia-red">pantry</span>
           </button>
-          
+
           <div className="hidden md:flex gap-8 items-center">
-            <Link to="/" className="text-sm uppercase tracking-widest font-bold text-kaia-charcoal hover:text-kaia-red transition-colors">Menu</Link>
-            <Link to="/about" className="text-sm uppercase tracking-widest font-bold text-kaia-charcoal hover:text-kaia-red transition-colors">Our Story</Link>
-            
+            <Link
+              to="/"
+              className="text-sm uppercase tracking-widest font-bold text-kaia-charcoal hover:text-kaia-red transition-colors"
+            >
+              Menu
+            </Link>
+            <Link
+              to="/about"
+              className="text-sm uppercase tracking-widest font-bold text-kaia-charcoal hover:text-kaia-red transition-colors"
+            >
+              Our Story
+            </Link>
+
             <div className="flex items-center gap-4 border-l border-kaia-tan/30 pl-8">
               {isAuthenticated ? (
                 <div className="relative">
-                  <button 
+                  <button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                     className="flex items-center gap-2 text-kaia-charcoal hover:text-kaia-red transition-colors group"
                   >
                     <div className="w-8 h-8 bg-kaia-red/10 rounded-full flex items-center justify-center text-kaia-red group-hover:bg-kaia-red group-hover:text-white transition-all">
                       <User size={16} />
                     </div>
-                    <span className="text-xs font-bold uppercase tracking-widest">{user?.name.split(' ')[0]}</span>
+                    <span className="text-xs font-bold uppercase tracking-widest">
+                      {user?.name.split(" ")[0]}
+                    </span>
                   </button>
-                  
+
                   {isUserMenuOpen && (
-                    <motion.div 
+                    <motion.div
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       className="absolute right-0 mt-4 w-48 bg-white rounded-2xl shadow-xl border border-kaia-tan/20 p-2 overflow-hidden"
                     >
-                      <Link 
-                        to="/wishlist" 
+                      <Link
+                        to="/wishlist"
                         onClick={() => setIsUserMenuOpen(false)}
                         className="flex items-center gap-3 px-4 py-3 text-xs font-bold uppercase tracking-widest text-kaia-taupe hover:bg-kaia-cream hover:text-kaia-red rounded-xl transition-all"
                       >
                         <Heart size={14} /> Wishlist
                       </Link>
-                      <Link 
-                        to="/orders" 
+                      <Link
+                        to="/orders"
                         onClick={() => setIsUserMenuOpen(false)}
                         className="flex items-center gap-3 px-4 py-3 text-xs font-bold uppercase tracking-widest text-kaia-taupe hover:bg-kaia-cream hover:text-kaia-red rounded-xl transition-all"
                       >
                         <Receipt size={14} /> My Orders
                       </Link>
-                      <button 
+                      <button
                         onClick={() => {
                           logout();
                           setIsUserMenuOpen(false);
@@ -96,10 +113,15 @@ export default function Navbar({ onCartClick, onHomeClick }: NavbarProps) {
                   )}
                 </div>
               ) : (
-                <Link to="/login" className="text-xs uppercase tracking-widest font-bold text-kaia-taupe hover:text-kaia-red transition-colors">Sign In</Link>
+                <Link
+                  to="/login"
+                  className="text-xs uppercase tracking-widest font-bold text-kaia-taupe hover:text-kaia-red transition-colors"
+                >
+                  Sign In
+                </Link>
               )}
 
-              <motion.button 
+              <motion.button
                 id="cart-icon"
                 key={totalItems}
                 initial={{ scale: 1 }}
@@ -110,7 +132,7 @@ export default function Navbar({ onCartClick, onHomeClick }: NavbarProps) {
               >
                 <ShoppingBag size={24} strokeWidth={1.5} />
                 {totalItems > 0 && (
-                  <motion.span 
+                  <motion.span
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     className="absolute -top-1 -right-1 bg-kaia-red text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white"
@@ -121,9 +143,9 @@ export default function Navbar({ onCartClick, onHomeClick }: NavbarProps) {
               </motion.button>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-4 md:hidden">
-            <motion.button 
+            <motion.button
               id="cart-icon-mobile"
               key={totalItems}
               initial={{ scale: 1 }}
@@ -139,15 +161,18 @@ export default function Navbar({ onCartClick, onHomeClick }: NavbarProps) {
                 </span>
               )}
             </motion.button>
-            <button onClick={() => navigate("/login")} className="text-kaia-charcoal">
+            <button
+              onClick={() => navigate("/login")}
+              className="text-kaia-charcoal"
+            >
               <User size={24} />
             </button>
           </div>
         </div>
       </motion.nav>
-      <motion.div 
-        className="fixed top-0 left-0 right-0 h-1 bg-kaia-red z-[60] origin-left" 
-        style={{ scaleX }} 
+      <motion.div
+        className="fixed top-0 left-0 right-0 h-1 bg-kaia-red z-60 origin-left"
+        style={{ scaleX }}
       />
     </>
   );

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { X, ShoppingBag, Check } from "lucide-react";
 import { MenuItem, useCart } from "../context/CartContext";
@@ -24,8 +24,14 @@ export default function ProductDetailModal({
   }, [product?.sliceOptions]);
 
   const [selectedSlices, setSelectedSlices] = useState<number | string | null>(
-    sliceOptions.length > 0 ? sliceOptions[0].slices : null,
+    sliceOptions.length > 0 ? sliceOptions[0].id : null,
   );
+
+  useEffect(() => {
+    if (sliceOptions.length > 0) {
+      setSelectedSlices(sliceOptions[0].id);
+    }
+  }, [sliceOptions]);
 
   const [isAdded, setIsAdded] = useState(false);
 
@@ -51,9 +57,12 @@ export default function ProductDetailModal({
   const handleAddToCart = (e: React.MouseEvent) => {
     if (!product) return;
     const startPos = { x: e.clientX, y: e.clientY };
+    const sliceObj = sliceOptions.filter(
+      (slice) => slice.id === selectedSlices,
+    )[0];
     addToCart(
-      { ...product, price: currentPrice },
-      selectedSlices || undefined,
+      { ...product, price: currentPrice, id: sliceObj.id },
+      sliceObj.slices || undefined,
       startPos,
     );
     setIsAdded(true);
@@ -72,13 +81,13 @@ export default function ProductDetailModal({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-kaia-charcoal/60 backdrop-blur-sm z-[150]"
+            className="fixed inset-0 bg-kaia-charcoal/60 backdrop-blur-sm z-150"
           />
           <motion.div
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="fixed inset-4 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-full md:max-w-4xl bg-white z-[151] rounded-[2rem] shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[90vh]"
+            className="fixed inset-4 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-full md:max-w-4xl bg-white z-151 rounded-4xl shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[90vh]"
           >
             <button
               onClick={onClose}
@@ -88,7 +97,7 @@ export default function ProductDetailModal({
             </button>
 
             <div className="w-full md:w-1/2 h-64 md:h-auto bg-kaia-tan/30 p-8 flex items-center justify-center relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
+              <div className="absolute inset-0 bg-linear-to-br from-white/20 to-transparent"></div>
               <img
                 src={product.image}
                 alt={product.name}
@@ -133,11 +142,11 @@ export default function ProductDetailModal({
                             setSelectedSlices(
                               option.slices === selectedSlices
                                 ? null
-                                : option.slices,
+                                : option.id,
                             )
                           }
                           className={`px-6 py-3 rounded-xl border-2 transition-all font-bold text-sm ${
-                            selectedSlices === option.slices
+                            selectedSlices === option.id
                               ? "border-kaia-red bg-kaia-red text-white shadow-lg"
                               : "border-kaia-tan/30 text-kaia-taupe hover:border-kaia-tan"
                           }`}

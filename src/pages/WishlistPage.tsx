@@ -1,39 +1,50 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useWishlists } from "../features/wishlists/useWishlists";
+import { useDeleteWishlist } from "../features/wishlists/useDeleteWishlist";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import CartDrawer from "../components/CartDrawer";
-import { Heart, ShoppingBag, Trash2 } from "lucide-react";
-import { useCart } from "../context/CartContext";
+import { DollarSign, Heart, ShoppingBag, Trash2 } from "lucide-react";
+import { MenuItem, useCart } from "../context/CartContext";
+import ProductDetailModal from "../components/ProductDetailModal";
 
 export default function WishlistPage() {
-  const [wishlist, setWishlist] = useState<any[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const { user, isAuthenticated } = useAuth();
   const { addToCart } = useCart();
   const navigate = useNavigate();
+  const { data: wishlist = [], isLoading } = useWishlists(user?.id);
+  const deleteWishlistMutation = useDeleteWishlist();
+  const [selectedProduct, setSelectedProduct] = useState<MenuItem | null>(null);
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate("/login");
-      return;
-    }
-    fetchWishlist();
-  }, [isAuthenticated, user]);
-
-  const fetchWishlist = async () => {
-    if (!user) return;
-    const res = await fetch(`/api/wishlist/${user.id}`);
-    const data = await res.json();
-    setWishlist(data);
-  };
+  if (!isAuthenticated) {
+    navigate("/login");
+    return null;
+  }
 
   const removeFromWishlist = async (productId: string) => {
     if (!user) return;
-    await fetch(`/api/wishlist/${user.id}/${productId}`, { method: "DELETE" });
-    fetchWishlist();
+    deleteWishlistMutation.mutate({ user_id: user.id, product_id: productId });
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col bg-kaia-cream">
+        <Navbar
+          onCartClick={() => setIsCartOpen(true)}
+          onHomeClick={() => navigate("/")}
+        />
+        <main className="grow flex items-center justify-center">
+          <p className="font-script text-3xl text-kaia-taupe">
+            Loading your favorites...
+          </p>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-kaia-cream">
@@ -90,13 +101,14 @@ export default function WishlistPage() {
                   </p>
                   <button
                     onClick={() => {
-                      addToCart({ ...product, quantity: 1 });
-                      setIsCartOpen(true);
+                      // addToCart({ ...product, quantity: 1 });
+                      // setIsCartOpen(true);
+                      setSelectedProduct(product);
                     }}
                     className="w-full bg-kaia-cream text-kaia-charcoal py-4 rounded-xl font-bold flex items-center justify-center gap-3 hover:bg-kaia-red hover:text-white transition-all"
                   >
                     <ShoppingBag size={18} />
-                    Add to Cart
+                    Make it happen
                   </button>
                 </div>
               </div>
@@ -104,6 +116,10 @@ export default function WishlistPage() {
           </div>
         )}
       </main>
+      <ProductDetailModal
+        product={selectedProduct}
+        onClose={() => setSelectedProduct(null)}
+      />
       <CartDrawer
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
