@@ -353,7 +353,10 @@ export default function AdminDashboard() {
 
       {/* Product Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-kaia-charcoal/60 z-50 flex items-center justify-center p-6">
+        <div
+          className="fixed inset-0 bg-kaia-charcoal/60 z-50 flex items-center justify-center p-6"
+          onClick={() => setIsModalOpen(false)}
+        >
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
