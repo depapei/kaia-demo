@@ -9,7 +9,7 @@ import {
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { useCreateTransaction } from "../features/transactions/useCreateTransaction";
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useEffect } from "react";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 
@@ -297,6 +297,16 @@ export default function CheckoutPage({ onBack }: CheckoutPageProps) {
     );
   };
 
+  useEffect(() => {
+    if (isSuccess) {
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: "smooth",
+      });
+    }
+  }, [isSuccess]);
+
   if (isSuccess) {
     return (
       <div className="min-h-screen bg-kaia-cream flex items-center justify-center p-6">
@@ -492,6 +502,7 @@ export default function CheckoutPage({ onBack }: CheckoutPageProps) {
               <button
                 form="checkout-form"
                 type="submit"
+                disabled={cart.length === 0}
                 className="w-full bg-kaia-red text-white py-5 rounded-2xl font-bold mt-10 hover:bg-kaia-charcoal transition-all shadow-xl flex items-center justify-center gap-3 group"
               >
                 Place Order
