@@ -505,7 +505,7 @@ export default function CheckoutPage({ onBack }: CheckoutPageProps) {
                 disabled={cart.length === 0}
                 className="w-full bg-kaia-red text-white py-5 rounded-2xl font-bold mt-10 hover:bg-kaia-charcoal transition-all shadow-xl flex items-center justify-center gap-3 group"
               >
-                Place Order
+                Order Now
                 <ShieldCheck
                   size={20}
                   className="group-hover:scale-110 transition-transform"
