@@ -6,6 +6,8 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { motion } from "framer-motion";
 import CartDrawer from "../components/CartDrawer";
+import { useLogin } from "../features/auth/useLogin";
+import { AxiosError } from "axios";
 
 export default function RegisterPage() {
   const [email, setEmail] = useState("");
@@ -15,6 +17,7 @@ export default function RegisterPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const registerMutation = useRegister();
+  const loginMutatation = useLogin();
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -26,14 +29,36 @@ export default function RegisterPage() {
       {
         onSuccess: (data) => {
           if (data.success) {
-            login(data.user);
-            navigate("/");
+            loginMutatation.mutate(
+              { email, password },
+              {
+                onSuccess: (data) => {
+                  if (data.success) {
+                    login(data.userData);
+                    navigate("/");
+                  } else {
+                    setError(data.message);
+                  }
+                },
+                onError: (err: AxiosError) => {
+                  type response = {
+                    message?: string;
+                  };
+                  const response: response = err.response.data;
+                  setError(response.message);
+                },
+              },
+            );
           } else {
             setError(data.message);
           }
         },
-        onError: () => {
-          setError("Something went wrong");
+        onError: (err: AxiosError) => {
+          type response = {
+            message?: string;
+          };
+          const response: response = err.response.data;
+          setError(response.message);
         },
       },
     );
