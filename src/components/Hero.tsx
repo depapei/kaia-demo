@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
 import { ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function Hero() {
   return (
@@ -57,12 +58,12 @@ export default function Hero() {
             Explore the Pantry
             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </a>
-          <a
-            href="#about"
+          <Link
+            to="/about"
             className="inline-flex items-center justify-center gap-2 bg-white text-kaia-charcoal border-2 border-kaia-tan px-10 py-4 rounded-2xl text-lg font-bold hover:bg-kaia-cream transition-all duration-300"
           >
             Our Story
-          </a>
+          </Link>
         </motion.div>
       </div>
 
