@@ -80,6 +80,12 @@ export default function Footer() {
             >
               Admin
             </Link>
+            <Link
+              to="/onboarding"
+              className="hover:text-white transition-colors"
+            >
+              Onboarding
+            </Link>
           </div>
         </div>
       </div>
