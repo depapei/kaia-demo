@@ -7,7 +7,6 @@ export const useTransactions = (userId: string | undefined) => {
     queryFn: async () => {
       if (!userId) return [];
       const response = await api.get(`/api/transactions/${userId}`);
-      console.log(response.data.data);
       return response.data.data;
     },
     enabled: !!userId,
