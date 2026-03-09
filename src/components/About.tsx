@@ -44,7 +44,7 @@ export default function About() {
             <div className="space-y-6 text-kaia-charcoal/80 font-light leading-relaxed text-lg">
               <p>
                 Founded on the belief that food is a universal language of love.
-                At kaiapantry, we don't just bake; we create memories.
+                At kaiapantry, we don't just bake, we create memories.
               </p>
               <p>
                 Our journey began in a small home kitchen with a single goal: to
