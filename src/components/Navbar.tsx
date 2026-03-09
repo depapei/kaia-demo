@@ -51,22 +51,43 @@ export default function Navbar({ onCartClick, onHomeClick }: NavbarProps) {
             kaia<span className="text-kaia-red">pantry</span>
           </button>
 
-          <div className="hidden md:flex gap-8 items-center">
+          <div className="md:flex gap-4 md:gap-8 items-center">
             <Link
               smooth
               to="/#menu"
-              className="text-sm uppercase tracking-widest font-bold text-kaia-charcoal hover:text-kaia-red transition-colors"
+              className="hidden md:block text-sm uppercase tracking-widest font-bold text-kaia-charcoal hover:text-kaia-red transition-colors"
             >
               Menu
             </Link>
             <Link
               to="/about"
-              className="text-sm uppercase tracking-widest font-bold text-kaia-charcoal hover:text-kaia-red transition-colors"
+              className="hidden md:block text-sm uppercase tracking-widest font-bold text-kaia-charcoal hover:text-kaia-red transition-colors"
             >
               Our Story
             </Link>
 
             <div className="flex items-center gap-4 border-l border-kaia-tan/30 pl-8">
+              <motion.button
+                id="cart-icon"
+                key={totalItems}
+                initial={{ scale: 1 }}
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ duration: 0.3 }}
+                onClick={onCartClick}
+                className="relative p-2 text-kaia-charcoal hover:text-kaia-red transition-colors group"
+              >
+                <ShoppingBag size={24} strokeWidth={1.5} />
+                {totalItems > 0 && (
+                  <motion.span
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="absolute -top-1 -right-1 bg-kaia-red text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white"
+                  >
+                    {totalItems}
+                  </motion.span>
+                )}
+              </motion.button>
+
               {isAuthenticated ? (
                 <div className="relative">
                   <button
@@ -117,58 +138,12 @@ export default function Navbar({ onCartClick, onHomeClick }: NavbarProps) {
               ) : (
                 <Link
                   to="/login"
-                  className="text-xs uppercase tracking-widest font-bold text-kaia-taupe hover:text-kaia-red transition-colors"
+                  className="text-xs uppercase tracking-widest font-bold text-kaia-red hover:text-kaia-taupe transition-colors"
                 >
                   Sign In
                 </Link>
               )}
-
-              <motion.button
-                id="cart-icon"
-                key={totalItems}
-                initial={{ scale: 1 }}
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 0.3 }}
-                onClick={onCartClick}
-                className="relative p-2 text-kaia-charcoal hover:text-kaia-red transition-colors group"
-              >
-                <ShoppingBag size={24} strokeWidth={1.5} />
-                {totalItems > 0 && (
-                  <motion.span
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className="absolute -top-1 -right-1 bg-kaia-red text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white"
-                  >
-                    {totalItems}
-                  </motion.span>
-                )}
-              </motion.button>
             </div>
-          </div>
-
-          <div className="flex items-center gap-4 md:hidden">
-            <motion.button
-              id="cart-icon-mobile"
-              key={totalItems}
-              initial={{ scale: 1 }}
-              animate={{ scale: [1, 1.2, 1] }}
-              transition={{ duration: 0.3 }}
-              onClick={onCartClick}
-              className="relative p-2 text-stone-800"
-            >
-              <ShoppingBag size={24} />
-              {totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 bg-kaia-red text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white">
-                  {totalItems}
-                </span>
-              )}
-            </motion.button>
-            <button
-              onClick={() => navigate("/login")}
-              className="text-kaia-charcoal"
-            >
-              <User size={24} />
-            </button>
           </div>
         </div>
       </motion.nav>
