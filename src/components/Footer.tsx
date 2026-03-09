@@ -68,12 +68,12 @@ export default function Footer() {
         <div className="pt-8 border-t border-kaia-taupe/20 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] text-kaia-taupe uppercase tracking-widest">
           <p>© {new Date().getFullYear()} kaiapantry. Handcrafted with care.</p>
           <div className="flex gap-8">
-            <a href="#" className="hover:text-white transition-colors">
+            <Link href="#" className="hover:text-white transition-colors">
               Privacy
-            </a>
-            <a href="#" className="hover:text-white transition-colors">
+            </Link>
+            <Link href="#" className="hover:text-white transition-colors">
               Terms
-            </a>
+            </Link>
             <Link
               to="/admin/login"
               className="hover:text-white transition-colors"
