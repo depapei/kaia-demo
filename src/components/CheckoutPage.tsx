@@ -22,7 +22,20 @@ export default function CheckoutPage({ onBack }: CheckoutPageProps) {
   const { user } = useAuth();
   const [isSuccess, setIsSuccess] = useState(false);
   const [lastTransaction, setLastTransaction] = useState<any>(null);
+  const [form, setForm] = useState<any>({
+    customerName: "",
+    customerEmail: "",
+  });
   const createTransactionMutation = useCreateTransaction();
+
+  useEffect(() => {
+    if (user) {
+      setForm({
+        customerName: user.name,
+        customerEmail: user.email,
+      });
+    }
+  }, [user]);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("id-ID", {
@@ -391,6 +404,10 @@ export default function CheckoutPage({ onBack }: CheckoutPageProps) {
                     required
                     name="fullName"
                     type="text"
+                    value={form.customerName}
+                    onChange={(e) =>
+                      setForm({ ...form, customerName: e.target.value })
+                    }
                     className="w-full bg-kaia-cream/30 border border-kaia-tan/50 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-kaia-red/20 transition-all"
                     placeholder="John Doe"
                   />
@@ -403,6 +420,10 @@ export default function CheckoutPage({ onBack }: CheckoutPageProps) {
                     required
                     name="email"
                     type="email"
+                    value={form.customerEmail}
+                    onChange={(e) =>
+                      setForm({ ...form, customerEmail: e.target.value })
+                    }
                     className="w-full bg-kaia-cream/30 border border-kaia-tan/50 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-kaia-red/20 transition-all"
                     placeholder="john@example.com"
                   />
@@ -503,9 +524,9 @@ export default function CheckoutPage({ onBack }: CheckoutPageProps) {
                 form="checkout-form"
                 type="submit"
                 disabled={cart.length === 0}
-                className="w-full bg-kaia-red text-white py-5 rounded-2xl font-bold mt-10 hover:bg-kaia-charcoal transition-all shadow-xl flex items-center justify-center gap-3 group"
+                className={`w-full text-white py-5 rounded-2xl font-bold mt-10 hover:bg-kaia-charcoal transition-all shadow-xl flex items-center justify-center gap-3 group ${cart.length === 0 ? "bg-kaia-charcoal" : "bg-kaia-red"}`}
               >
-                Order Now
+                {cart.length === 0 ? "Cart still empty!" : "Order Now"}
                 <ShieldCheck
                   size={20}
                   className="group-hover:scale-110 transition-transform"
