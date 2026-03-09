@@ -130,6 +130,7 @@ export default function CheckoutPage({ onBack }: CheckoutPageProps) {
       });
       doc.text(lastTransaction.address || "-", pageWidth - 25, 78, {
         align: "right",
+        // maxWidth: 50,
       });
       doc.text(
         `${lastTransaction.city || "-"}, ${lastTransaction.postalCode || "-"}`,
@@ -258,7 +259,9 @@ export default function CheckoutPage({ onBack }: CheckoutPageProps) {
         },
       );
 
-      doc.save(`invoice-${lastTransaction.id}.pdf`);
+      const cTimestamp = lastTransaction.createdAt.replace(/\//g, "-");
+      const cName = lastTransaction.customerName.replace(/ /g, "-");
+      doc.save(`Kaia-Bakery-invoice-${cTimestamp}-${cName}-.pdf`);
     } catch (error) {
       console.error("PDF Error:", error);
       alert("Failed to generate invoice PDF");
@@ -435,6 +438,7 @@ export default function CheckoutPage({ onBack }: CheckoutPageProps) {
                   <textarea
                     required
                     name="address"
+                    maxLength="100"
                     rows={3}
                     className="w-full bg-kaia-cream/30 border border-kaia-tan/50 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-kaia-red/20 transition-all"
                     placeholder="123 Bakery St, Flour District"
