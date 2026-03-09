@@ -62,9 +62,7 @@ export default function ProductDetailModal({
   const currentPrice = useMemo(() => {
     if (!product) return 0;
     if (!selectedSlices || sliceOptions.length === 0) return product.price;
-    const option = sliceOptions.find(
-      (opt: any) => opt.slices === selectedSlices,
-    );
+    const option = sliceOptions.find((opt: any) => opt.id === selectedSlices);
     return option ? option.price : product.price;
   }, [selectedSlices, sliceOptions, product]);
 
