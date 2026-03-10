@@ -1,19 +1,17 @@
-import { motion } from "motion/react";
 import {
   ArrowLeft,
-  Truck,
-  ShieldCheck,
   CheckCircle2,
   Download,
+  ShieldCheck,
+  Truck,
 } from "lucide-react";
-import { useCart } from "../context/CartContext";
+import { motion } from "motion/react";
+import { FormEvent, useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { useCart } from "../context/CartContext";
 import { useCreateTransaction } from "../features/transactions/useCreateTransaction";
-import { useState, FormEvent, useEffect } from "react";
-import { jsPDF } from "jspdf";
-import autoTable from "jspdf-autotable";
-import { formatPrice } from "../lib/helpers/FormatPrice";
 import { downloadInvoice } from "../lib/helpers/DownloadInvoice";
+import { formatPrice } from "../lib/helpers/FormatPrice";
 
 interface CheckoutPageProps {
   onBack: () => void;
