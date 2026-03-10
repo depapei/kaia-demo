@@ -143,7 +143,7 @@ export const MenuCard: React.FC<MenuCardProps> = ({
           <div className="mb-6">
             {sliceOptions.length > 1 && (
               <p className="text-[10px] uppercase tracking-widest font-bold text-kaia-taupe mb-3">
-                Select Slices
+                Select Variant
               </p>
             )}
             <div className="flex flex-wrap gap-2">

@@ -154,7 +154,7 @@ export default function ProductDetailModal({
                 {sliceOptions.length > 0 && (
                   <div className="mt-8">
                     <span className="text-[10px] uppercase tracking-widest font-bold text-kaia-taupe block mb-3">
-                      Select Slices
+                      Select Variant
                     </span>
                     <div className="flex flex-wrap gap-3">
                       {sliceOptions.map((option: any) => (
@@ -173,8 +173,7 @@ export default function ProductDetailModal({
                               : "border-kaia-tan/30 text-kaia-taupe hover:border-kaia-tan"
                           }`}
                         >
-                          {option.slices}{" "}
-                          {option.slices === "Full" ? "" : "Slices"}
+                          {option.slices}
                         </button>
                       ))}
                     </div>
