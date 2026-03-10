@@ -2,6 +2,23 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { formatPrice } from "./FormatPrice";
 
+const drawSafeBlobs = (doc: jsPDF, pageWidth: number, pageHeight: number) => {
+  doc.setFillColor(229, 211, 194);
+  doc.circle(15, 15, 25, "F");
+  doc.circle(pageWidth - 15, pageHeight - 15, 25, "F");
+};
+
+const drawBackground = (doc: jsPDF, pageWidth: number, pageHeight: number) => {
+  doc.setFillColor(240, 232, 220);
+  doc.rect(0, 0, pageWidth, pageHeight, "F");
+
+  doc.setFillColor(229, 211, 194);
+  doc.circle(20, 20, 40, "F");
+  doc.circle(pageWidth - 20, 60, 30, "F");
+  doc.circle(40, pageHeight - 30, 50, "F");
+  doc.circle(pageWidth - 30, pageHeight - 10, 40, "F");
+};
+
 export const downloadInvoice = (lastTransaction: any) => {
   if (!lastTransaction) {
     alert("No transaction data");
@@ -9,28 +26,28 @@ export const downloadInvoice = (lastTransaction: any) => {
   }
 
   try {
-    const doc = new jsPDF();
+    const doc = new jsPDF({ format: "A4" });
 
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
 
-    // Background color (Kaia Cream: #f0e8dc)
-    doc.setFillColor(240, 232, 220);
-    doc.rect(0, 0, pageWidth, pageHeight, "F");
+    const originalAddPage = doc.addPage.bind(doc);
+    (doc as any).addPage = function (...args: any[]) {
+      originalAddPage(...args);
 
-    // Decorative Background Blobs (Kaia Tan: #e5d3c2)
-    doc.setFillColor(229, 211, 194);
-    doc.circle(20, 20, 40, "F");
-    doc.circle(pageWidth - 20, 60, 30, "F");
-    doc.circle(40, pageHeight - 30, 50, "F");
-    doc.circle(pageWidth - 30, pageHeight - 10, 40, "F");
+      doc.setFillColor(240, 232, 220);
+      doc.rect(0, 0, pageWidth, pageHeight, "F");
+      drawSafeBlobs(doc, pageWidth, pageHeight);
+      return this;
+    };
+
+    drawBackground(doc, pageWidth, pageHeight);
 
     const items =
       typeof lastTransaction.items === "string"
         ? JSON.parse(lastTransaction.items)
         : lastTransaction.items;
 
-    // Header Section
     doc.setTextColor(129, 18, 9);
     doc.setFontSize(36);
     doc.setFont("times", "bolditalic");
@@ -47,10 +64,8 @@ export const downloadInvoice = (lastTransaction: any) => {
     doc.setLineWidth(0.5);
     doc.line(pageWidth / 2 - 20, 42, pageWidth / 2 + 20, 42);
 
-    // Invoice Details & Bill To Section
     doc.setTextColor(76, 75, 68);
 
-    // Left Column: Invoice Details
     doc.setFontSize(14);
     doc.setFont("times", "bolditalic");
     doc.text("Invoice Details", 25, 65);
@@ -66,7 +81,6 @@ export const downloadInvoice = (lastTransaction: any) => {
       83,
     );
 
-    // Right Column: Bill To
     doc.setTextColor(129, 18, 9);
     doc.setFontSize(14);
     doc.setFont("times", "bolditalic");
@@ -81,38 +95,24 @@ export const downloadInvoice = (lastTransaction: any) => {
     doc.setFont("helvetica", "normal");
     doc.setTextColor(175, 159, 143);
 
-    // Email (unchanged)
     doc.text(lastTransaction.customerEmail || "-", pageWidth - 25, 73, {
       align: "right",
     });
 
-    // === PERBAIKAN: Address dengan auto line break ===
     const addressText = lastTransaction.address || "-";
-    const addressMaxWidth = 70; // mm - lebar maksimal sebelum wrap
+    const addressMaxWidth = 70;
     const addressStartY = 78;
+    const lineHeight = 5.35;
 
-    // Dapatkan line height aktual untuk font size 9 helvetica
-    // const lineHeight = doc.getLineHeight(); // ~4.23mm untuk font size 9?
-    const lineHeight = 5.35; // ~4.23mm untuk font size 9?
-
-    // Split text agar otomatis wrap sesuai maxWidth
     const splitAddress = doc.splitTextToSize(addressText, addressMaxWidth);
-
-    // Render address dengan right alignment dan auto line break
     doc.text(splitAddress, pageWidth - 25, addressStartY, {
       align: "right",
     });
 
-    // Hitung offset dinamis untuk elemen di bawah address
-    const originalAddressLines = 1;
-    const actualAddressLines = splitAddress.length;
-    const extraLines = actualAddressLines - originalAddressLines;
+    const extraLines = splitAddress.length - 1;
     const dynamicOffset = extraLines * lineHeight;
-    // === END PERBAIKAN ===
 
-    // City/Postal - posisi Y dihitung dinamis berdasarkan tinggi address
-    const originalCityY = 83;
-    const cityY = originalCityY + dynamicOffset;
+    const cityY = 83 + dynamicOffset;
     doc.text(
       `${lastTransaction.city || "-"}, ${lastTransaction.postalCode || "-"}`,
       pageWidth - 25,
@@ -120,9 +120,7 @@ export const downloadInvoice = (lastTransaction: any) => {
       { align: "right" },
     );
 
-    // Table Section - startY juga disesuaikan agar tidak tertimpa
-    const originalTableStartY = 100;
-    const tableStartY = originalTableStartY + dynamicOffset;
+    const tableStartY = 100 + dynamicOffset;
 
     const tableData = items.map((item: any) => [
       {
@@ -136,7 +134,7 @@ export const downloadInvoice = (lastTransaction: any) => {
     ]);
 
     autoTable(doc, {
-      startY: tableStartY, // <- Menggunakan Y dinamis
+      startY: tableStartY,
       head: [["Item Description", "Option", "Qty", "Unit Price", "Amount"]],
       body: tableData,
       theme: "plain",
@@ -168,7 +166,6 @@ export const downloadInvoice = (lastTransaction: any) => {
 
     const finalY = (doc as any).lastAutoTable?.finalY || 140 + dynamicOffset;
 
-    // Payment Method Section
     doc.setFontSize(12);
     doc.setFont("times", "bolditalic");
     doc.setTextColor(129, 18, 9);
@@ -185,7 +182,6 @@ export const downloadInvoice = (lastTransaction: any) => {
     );
     doc.text("Bank Name : Kaiapantry Central Bank", 25, finalY + 38);
 
-    // Summary Section
     const summaryX = pageWidth - 25;
     const labelX = pageWidth - 85;
 
@@ -200,7 +196,6 @@ export const downloadInvoice = (lastTransaction: any) => {
     doc.text("Tax 0%", labelX, finalY + 28);
     doc.text(formatPrice(0), summaryX, finalY + 28, { align: "right" });
 
-    // Grand Total Section
     const barY = finalY + 35;
     const barHeight = 14;
     const barWidth = summaryX - labelX + 15;
@@ -218,7 +213,9 @@ export const downloadInvoice = (lastTransaction: any) => {
       align: "right",
     });
 
-    // Footer Section
+    const lastPage = doc.getNumberOfPages();
+    doc.setPage(lastPage);
+
     doc.setFontSize(10);
     doc.setFont("times", "italic");
     doc.setTextColor(175, 159, 143);
@@ -226,9 +223,7 @@ export const downloadInvoice = (lastTransaction: any) => {
       "Thank you for choosing Kaiapantry!",
       pageWidth / 2,
       pageHeight - 25,
-      {
-        align: "center",
-      },
+      { align: "center" },
     );
 
     doc.setFontSize(8);
@@ -237,14 +232,13 @@ export const downloadInvoice = (lastTransaction: any) => {
       "Artisanal Treats Baked with Love",
       pageWidth / 2,
       pageHeight - 18,
-      {
-        align: "center",
-      },
+      { align: "center" },
     );
 
     const cTimestamp = lastTransaction.createdAt.replace(/\//g, "-");
     const cName = lastTransaction.customerName.replace(/ /g, "-");
-    doc.save(`Kaia-Bakery-invoice-${cTimestamp}-${cName}-.pdf`);
+
+    doc.save(`Kaia-Bakery-invoice-${cTimestamp}-${cName}.pdf`);
   } catch (error) {
     console.error("PDF Error:", error);
     alert("Failed to generate invoice PDF");
