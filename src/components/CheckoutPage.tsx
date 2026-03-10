@@ -114,7 +114,7 @@ export default function CheckoutPage({ onBack }: CheckoutPageProps) {
 
           <div className="space-y-4">
             <button
-              onClick={downloadInvoice(lastTransaction)}
+              onClick={() => downloadInvoice(lastTransaction)}
               className="w-full bg-kaia-sage text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-kaia-charcoal transition-all shadow-lg"
             >
               <Download size={20} />
