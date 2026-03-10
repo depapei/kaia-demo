@@ -16,6 +16,7 @@ export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const loginMutation = useLogin();
+  const { isPending } = loginMutation;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,9 +103,10 @@ export default function LoginPage() {
               </div>
               <button
                 type="submit"
-                className="w-full bg-kaia-red text-white py-4 rounded-xl font-bold hover:bg-kaia-charcoal transition-all shadow-lg"
+                disabled={isPending}
+                className={`w-full  text-white py-4 rounded-xl font-bold hover:bg-kaia-charcoal transition-all shadow-lg ${isPending ? "bg-kaia-charcoal animate-pulse" : "bg-kaia-red"}`}
               >
-                Sign In
+                {isPending ? "Loading ..." : "Sign In"}
               </button>
             </form>
 
