@@ -498,7 +498,7 @@ export default function AdminDashboard() {
                 <div className="border-t border-kaia-tan/30 pt-6">
                   <div className="flex justify-between items-center mb-4">
                     <label className="block text-[10px] uppercase tracking-widest font-bold text-kaia-taupe">
-                      Slice Options
+                      Variant Options
                     </label>
                     <button
                       type="button"
@@ -542,7 +542,7 @@ export default function AdminDashboard() {
                         <div className="grow grid grid-cols-2 gap-4">
                           <div>
                             <label className="block text-[8px] uppercase tracking-widest font-bold text-kaia-taupe mb-1">
-                              Slices (e.g. 3, 10, Full)
+                              Variant (e.g. Chocolate, 2 Slices)
                             </label>
                             <input
                               type="text"
