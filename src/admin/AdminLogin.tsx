@@ -17,6 +17,7 @@ export default function AdminLogin() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const adminLoginMutation = useAdminLogin();
+  const { isPending } = adminLoginMutation;
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,9 +103,10 @@ export default function AdminLogin() {
 
           <button
             type="submit"
-            className="w-full bg-kaia-red text-white py-4 rounded-xl font-bold hover:bg-kaia-charcoal transition-all duration-300 shadow-lg"
+            disabled={isPending}
+            className={`w-full  text-white py-4 rounded-xl font-bold hover:bg-kaia-charcoal transition-all shadow-lg ${isPending ? "bg-kaia-charcoal animate-pulse" : "bg-kaia-red"}`}
           >
-            Enter Admin Panel
+            {isPending ? "Loading ..." : "Enter Admin Panel"}
           </button>
           <p className="text-center text-kaia-taupe text-sm">
             Back to the website?{" "}
