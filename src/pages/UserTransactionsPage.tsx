@@ -5,8 +5,9 @@ import { useTransactions } from "../features/transactions/useTransactions";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import CartDrawer from "../components/CartDrawer";
-import { Receipt, Package, Calendar, MapPin } from "lucide-react";
+import { Receipt, Package, Calendar, MapPin, DownloadIcon } from "lucide-react";
 import { motion } from "motion/react";
+import { downloadInvoice } from "../lib/helpers/DownloadInvoice";
 
 export default function UserTransactionsPage() {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -172,6 +173,15 @@ export default function UserTransactionsPage() {
                             {tx.city}, {tx.postalCode}
                           </p>
                         </div>
+                        <button
+                          onClick={() => downloadInvoice(tx)}
+                          className={`w-fit p-4 rounded-2xl font-bold transition-all duration-300 shadow-md hover:shadow-lg active:scale-95 flex items-center justify-center gap-2 mt-auto bg-kaia-red text-white hover:bg-kaia-charcoal`}
+                        >
+                          <>
+                            <DownloadIcon size={18} />
+                            Download Invoice
+                          </>
+                        </button>
                       </div>
                     </div>
                   </div>

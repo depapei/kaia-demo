@@ -12,6 +12,8 @@ import { useCreateTransaction } from "../features/transactions/useCreateTransact
 import { useState, FormEvent, useEffect } from "react";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
+import { formatPrice } from "../lib/helpers/FormatPrice";
+import { downloadInvoice } from "../lib/helpers/DownloadInvoice";
 
 interface CheckoutPageProps {
   onBack: () => void;
@@ -36,237 +38,6 @@ export default function CheckoutPage({ onBack }: CheckoutPageProps) {
       });
     }
   }, [user]);
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("id-ID", {
-      style: "currency",
-      currency: "IDR",
-      minimumFractionDigits: 0,
-    })
-      .format(price)
-      .replace("Rp", "Rp ");
-  };
-
-  const downloadInvoice = () => {
-    if (!lastTransaction) {
-      alert("No transaction data");
-      return;
-    }
-
-    try {
-      const doc = new jsPDF();
-
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.getHeight();
-
-      // Background color (Kaia Cream: #f0e8dc)
-      doc.setFillColor(240, 232, 220);
-      doc.rect(0, 0, pageWidth, pageHeight, "F");
-
-      // Decorative Background Blobs (Kaia Tan: #e5d3c2)
-      doc.setFillColor(229, 211, 194);
-      doc.circle(20, 20, 40, "F"); // Top left blob
-      doc.circle(pageWidth - 20, 60, 30, "F"); // Middle right blob
-      doc.circle(40, pageHeight - 30, 50, "F"); // Bottom left blob
-      doc.circle(pageWidth - 30, pageHeight - 10, 40, "F"); // Bottom right blob
-
-      const items =
-        typeof lastTransaction.items === "string"
-          ? JSON.parse(lastTransaction.items)
-          : lastTransaction.items;
-
-      // Header Section
-      doc.setTextColor(129, 18, 9); // Kaia Red: #811209
-      doc.setFontSize(36);
-      doc.setFont("times", "bolditalic");
-      doc.text("KAIAPANTRY", pageWidth / 2, 30, { align: "center" });
-
-      doc.setFontSize(10);
-      doc.setFont("helvetica", "normal");
-      doc.setTextColor(76, 75, 68); // Kaia Charcoal: #4c4b44
-      doc.text("ARTISANAL BAKERY & TREATS", pageWidth / 2, 38, {
-        align: "center",
-      });
-
-      doc.setDrawColor(129, 18, 9); // Kaia Red
-      doc.setLineWidth(0.5);
-      doc.line(pageWidth / 2 - 20, 42, pageWidth / 2 + 20, 42);
-
-      // Invoice Details & Bill To Section
-      doc.setTextColor(76, 75, 68); // Kaia Charcoal
-
-      // Left Column: Invoice Details
-      doc.setFontSize(14);
-      doc.setFont("times", "bolditalic");
-      doc.text("Invoice Details", 25, 65);
-
-      doc.setFontSize(9);
-      doc.setFont("helvetica", "normal");
-      doc.setTextColor(175, 159, 143); // Kaia Taupe: #af9f8f
-      doc.text(`Invoice Date: ${lastTransaction.createdAt}`, 25, 73);
-      doc.text(`Due Date: ${lastTransaction.createdAt}`, 25, 78);
-      doc.text(
-        `Invoice No: #${lastTransaction.id.split("-")[0].toUpperCase()}`,
-        25,
-        83,
-      );
-
-      // Right Column: Bill To
-      doc.setTextColor(129, 18, 9); // Kaia Red
-      doc.setFontSize(14);
-      doc.setFont("times", "bolditalic");
-      doc.text(
-        `To: ${lastTransaction.customerName || "Valued Customer"}`,
-        pageWidth - 25,
-        65,
-        { align: "right" },
-      );
-
-      doc.setFontSize(9);
-      doc.setFont("helvetica", "normal");
-      doc.setTextColor(175, 159, 143); // Kaia Taupe
-      doc.text(lastTransaction.customerEmail || "-", pageWidth - 25, 73, {
-        align: "right",
-      });
-      doc.text(lastTransaction.address || "-", pageWidth - 25, 78, {
-        align: "right",
-        // maxWidth: 50,
-      });
-      doc.text(
-        `${lastTransaction.city || "-"}, ${lastTransaction.postalCode || "-"}`,
-        pageWidth - 25,
-        83,
-        { align: "right" },
-      );
-
-      // Table Section
-      const tableData = items.map((item: any) => [
-        {
-          content: item.name,
-          styles: { fontStyle: "bold", textColor: [129, 18, 9] },
-        },
-        item.slices ? `${item.slices} Slices` : "Standard",
-        item.quantity,
-        formatPrice(item.price),
-        formatPrice(item.price * item.quantity),
-      ]);
-
-      autoTable(doc, {
-        startY: 100,
-        head: [["Item Description", "Option", "Qty", "Unit Price", "Amount"]],
-        body: tableData,
-        theme: "plain",
-        headStyles: {
-          fillColor: [190, 194, 151], // Kaia Sage: #bec297
-          textColor: [76, 75, 68], // Kaia Charcoal
-          fontSize: 10,
-          fontStyle: "bold",
-          halign: "center",
-          cellPadding: 6,
-        },
-        bodyStyles: {
-          fontSize: 9,
-          textColor: [76, 75, 68], // Kaia Charcoal
-          cellPadding: 6,
-          fillColor: [240, 232, 220], // Kaia Cream
-        },
-        columnStyles: {
-          0: { cellWidth: 60 },
-          1: { halign: "center" },
-          2: { halign: "center" },
-          3: { halign: "right" },
-          4: { halign: "right" },
-        },
-        alternateRowStyles: {
-          fillColor: [229, 211, 194], // Kaia Tan: #e5d3c2
-        },
-      });
-
-      const finalY = (doc as any).lastAutoTable?.finalY || 140;
-
-      // Payment Method Section
-      doc.setFontSize(12);
-      doc.setFont("times", "bolditalic");
-      doc.setTextColor(129, 18, 9); // Kaia Red
-      doc.text("Payment Method", 25, finalY + 20);
-
-      doc.setFontSize(9);
-      doc.setFont("helvetica", "normal");
-      doc.setTextColor(175, 159, 143); // Kaia Taupe
-      doc.text("Account : 1234 5678 9101", 25, finalY + 28);
-      doc.text(
-        `A/C Name : ${lastTransaction.customerName || "Customer"}`,
-        25,
-        finalY + 33,
-      );
-      doc.text("Bank Name : Kaiapantry Central Bank", 25, finalY + 38);
-
-      // Summary Section
-      const summaryX = pageWidth - 25;
-      const labelX = pageWidth - 85; // Increased space for labels
-
-      doc.setFontSize(10);
-      doc.setFont("helvetica", "normal");
-      doc.setTextColor(175, 159, 143); // Kaia Taupe
-      doc.text("Sub Total", labelX, finalY + 20);
-      doc.text(formatPrice(lastTransaction.totalPrice), summaryX, finalY + 20, {
-        align: "right",
-      });
-
-      doc.text("Tax 0%", labelX, finalY + 28);
-      doc.text(formatPrice(0), summaryX, finalY + 28, { align: "right" });
-
-      // Grand Total Section - Unified Bar Design
-      const barY = finalY + 35;
-      const barHeight = 14;
-      const barWidth = summaryX - labelX + 15;
-
-      doc.setFillColor(129, 18, 9); // Kaia Red
-      doc.rect(labelX - 5, barY, barWidth, barHeight, "F");
-
-      doc.setFontSize(11);
-      doc.setFont("helvetica", "bold");
-      doc.setTextColor(240, 232, 220); // Kaia Cream
-
-      // Center text vertically in the bar
-      const textY = barY + 9;
-      doc.text("GRAND TOTAL", labelX, textY);
-      doc.text(formatPrice(lastTransaction.totalPrice), summaryX, textY, {
-        align: "right",
-      });
-
-      // Footer Section
-      doc.setFontSize(10);
-      doc.setFont("times", "italic");
-      doc.setTextColor(175, 159, 143); // Kaia Taupe
-      doc.text(
-        "Thank you for choosing Kaiapantry!",
-        pageWidth / 2,
-        pageHeight - 25,
-        {
-          align: "center",
-        },
-      );
-
-      doc.setFontSize(8);
-      doc.setFont("helvetica", "normal");
-      doc.text(
-        "Artisanal Treats Baked with Love",
-        pageWidth / 2,
-        pageHeight - 18,
-        {
-          align: "center",
-        },
-      );
-
-      const cTimestamp = lastTransaction.createdAt.replace(/\//g, "-");
-      const cName = lastTransaction.customerName.replace(/ /g, "-");
-      doc.save(`Kaia-Bakery-invoice-${cTimestamp}-${cName}-.pdf`);
-    } catch (error) {
-      console.error("PDF Error:", error);
-      alert("Failed to generate invoice PDF");
-    }
-  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -344,7 +115,7 @@ export default function CheckoutPage({ onBack }: CheckoutPageProps) {
 
           <div className="space-y-4">
             <button
-              onClick={downloadInvoice}
+              onClick={downloadInvoice(lastTransaction)}
               className="w-full bg-kaia-sage text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-kaia-charcoal transition-all shadow-lg"
             >
               <Download size={20} />
@@ -438,7 +209,7 @@ export default function CheckoutPage({ onBack }: CheckoutPageProps) {
                   <textarea
                     required
                     name="address"
-                    maxLength="100"
+                    maxLength="150"
                     rows={3}
                     className="w-full bg-kaia-cream/30 border border-kaia-tan/50 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-kaia-red/20 transition-all"
                     placeholder="123 Bakery St, Flour District"
