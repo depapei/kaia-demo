@@ -29,6 +29,7 @@ export default function CheckoutPage({ onBack }: CheckoutPageProps) {
     customerEmail: "",
   });
   const createTransactionMutation = useCreateTransaction();
+  const { isPending } = createTransactionMutation;
 
   useEffect(() => {
     if (user) {
@@ -298,10 +299,14 @@ export default function CheckoutPage({ onBack }: CheckoutPageProps) {
               <button
                 form="checkout-form"
                 type="submit"
-                disabled={cart.length === 0}
-                className={`w-full text-white py-5 rounded-2xl font-bold mt-10 hover:bg-kaia-charcoal transition-all shadow-xl flex items-center justify-center gap-3 group ${cart.length === 0 ? "bg-kaia-charcoal" : "bg-kaia-red"}`}
+                disabled={cart.length === 0 || isPending}
+                className={`w-full text-white py-5 rounded-2xl font-bold mt-10 hover:bg-kaia-charcoal transition-all shadow-xl flex items-center justify-center gap-3 group ${isPending ? "bg-kaia-charcoal animate-pulse hover:cursor-not-allowed" : cart.length === 0 ? "bg-kaia-charcoal hover:cursor-not-allowed" : "bg-kaia-red"}`}
               >
-                {cart.length === 0 ? "Cart still empty!" : "Order Now"}
+                {isPending
+                  ? "Loading..."
+                  : cart.length === 0
+                    ? "Cart still empty!"
+                    : "Order Now"}
                 <ShieldCheck
                   size={20}
                   className="group-hover:scale-110 transition-transform"
