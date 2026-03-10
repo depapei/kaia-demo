@@ -17,6 +17,7 @@ export default function RegisterPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const registerMutation = useRegister();
+  const { isPending } = registerMutation;
   const loginMutatation = useLogin();
   const [isCartOpen, setIsCartOpen] = useState(false);
 
@@ -137,9 +138,10 @@ export default function RegisterPage() {
               </div>
               <button
                 type="submit"
-                className="w-full bg-kaia-red text-white py-4 rounded-xl font-bold hover:bg-kaia-charcoal transition-all shadow-lg"
+                disabled={isPending}
+                className={`w-full  text-white py-4 rounded-xl font-bold hover:bg-kaia-charcoal transition-all shadow-lg ${isPending ? "bg-kaia-charcoal animate-pulse" : "bg-kaia-red"}`}
               >
-                Create Account
+                {isPending ? "Loading ..." : "Create Account"}
               </button>
             </form>
 
