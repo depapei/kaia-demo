@@ -104,7 +104,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={isPending}
-                className={`w-full  text-white py-4 rounded-xl font-bold hover:bg-kaia-charcoal transition-all shadow-lg ${isPending ? "bg-kaia-charcoal animate-pulse" : "bg-kaia-red"}`}
+                className={`w-full  text-white py-4 rounded-xl font-bold hover:bg-kaia-charcoal transition-all shadow-lg ${isPending ? "bg-kaia-charcoal animate-pulse hover:cursor-not-allowed" : "bg-kaia-red"}`}
               >
                 {isPending ? "Loading ..." : "Sign In"}
               </button>
