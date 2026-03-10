@@ -16,7 +16,9 @@ export default function Footer() {
             </p>
             <div className="flex gap-4">
               <a
-                href="https://www.instagram.com/kaiapantry/"
+                href="https://instagram.com/kaiapantry"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="hover:text-kaia-red transition-colors"
               >
                 <Instagram size={24} />
