@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
 import { Lock, User } from "lucide-react";
 import { useAdminLogin } from "../features/admin/useAdminLogin";
+import { AxiosError } from "axios";
 
 export interface Token {
   user_id: string;
@@ -33,8 +34,12 @@ export default function AdminLogin() {
             setError(data.message);
           }
         },
-        onError: () => {
-          setError("Login failed. Please try again.");
+        onError: (err: AxiosError) => {
+          type response = {
+            message?: string;
+          };
+          const response: response = err.response.data;
+          setError(response.message);
         },
       },
     );
