@@ -24,3 +24,34 @@ export const useCreateAdminProduct = () => {
     },
   });
 };
+
+export const useEditAdminProduct = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (productData: any) => {
+      const response = await api.put(
+        `/admin/products/${productData.product_id}`,
+        productData.data,
+      );
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-products"] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+    },
+  });
+};
+
+export const useDeleteAdminProduct = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: any) => {
+      const response = await api.delete(`/admin/products/${id}`);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-products"] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+    },
+  });
+};

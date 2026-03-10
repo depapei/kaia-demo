@@ -15,11 +15,14 @@ import {
 import {
   useAdminProducts,
   useCreateAdminProduct,
+  useDeleteAdminProduct,
+  useEditAdminProduct,
 } from "../features/admin/useAdminProducts";
 import { useAdminTransactions } from "../features/admin/useAdminTransactions";
 import api from "../api/axios";
 import { jwtDecode } from "jwt-decode";
 import { Token } from "./AdminLogin";
+import { AxiosError } from "axios";
 
 interface Product {
   id: string;
@@ -77,6 +80,12 @@ export default function AdminDashboard() {
     return [];
   }, [transactions_raw]);
   const createProductMutation = useCreateAdminProduct();
+  const editProductMutation = useEditAdminProduct();
+  const deleteProductMutation = useDeleteAdminProduct();
+  const { isPending: cPending } = createProductMutation;
+  const { isPending: ePending } = editProductMutation;
+  const { isPending: dPending } = deleteProductMutation;
+  const isPending = cPending || ePending || dPending;
 
   const handleLogout = () => {
     localStorage.removeItem("adminToken");
@@ -103,34 +112,55 @@ export default function AdminDashboard() {
     };
 
     if (editingProduct) {
-      await api.put(`/admin/products/${editingProduct.id}`, productData);
-      refetchProducts();
+      editProductMutation.mutate(
+        { product_id: editingProduct.id, data: productData },
+        {
+          onSuccess: () => {
+            setIsModalOpen(false);
+            setEditingProduct(null);
+            setFormData({
+              name: "",
+              price: "",
+              category: "Cakes",
+              desc: "",
+              longDesc: "",
+              image: "",
+              sliceOptions: [],
+            });
+          },
+        },
+      );
     } else {
-      createProductMutation.mutate(productData);
+      createProductMutation.mutate(productData, {
+        onSuccess: () => {
+          setIsModalOpen(false);
+          setEditingProduct(null);
+          setFormData({
+            name: "",
+            price: "",
+            category: "Cakes",
+            desc: "",
+            longDesc: "",
+            image: "",
+            sliceOptions: [],
+          });
+        },
+      });
     }
-
-    setIsModalOpen(false);
-    setEditingProduct(null);
-    setFormData({
-      name: "",
-      price: "",
-      category: "Cakes",
-      desc: "",
-      longDesc: "",
-      image: "",
-      sliceOptions: [],
-    });
   };
 
   const handleDeleteProduct = async (id: string) => {
     if (confirm("Are you sure you want to delete this product?")) {
       try {
-        const res = await api.delete(`/admin/products/${id}`);
-        if (res.status === 200) {
-          refetchProducts();
-        } else {
-          alert("Failed to delete product. Please try again.");
-        }
+        deleteProductMutation.mutate(id, {
+          onError: (err: AxiosError) => {
+            type response = {
+              message?: string;
+            };
+            const response: response = err.response.data;
+            alert(response);
+          },
+        });
       } catch (err) {
         console.error("Delete error:", err);
         alert("An error occurred while deleting the product.");
@@ -615,10 +645,14 @@ export default function AdminDashboard() {
 
                 <button
                   type="submit"
-                  disabled={noSliceOptions}
-                  className={`${noSliceOptions ? "hover:cursor-not-allowed bg-kaia-charcoal" : "bg-kaia-red"} w-full  text-white py-4 rounded-xl font-bold hover:bg-kaia-charcoal transition-all shadow-lg`}
+                  disabled={noSliceOptions || isPending}
+                  className={`${isPending ? "animate-pulse hover:cursor-not-allowed bg-kaia-charcoal" : noSliceOptions ? "hover:cursor-not-allowed bg-kaia-charcoal" : "bg-kaia-red"} w-full  text-white py-4 rounded-xl font-bold hover:bg-kaia-charcoal transition-all shadow-lg`}
                 >
-                  {editingProduct ? "Update Product" : "Create Product"}
+                  {isPending
+                    ? "Loading ..."
+                    : editingProduct
+                      ? "Update Product"
+                      : "Create Product"}
                 </button>
               </form>
             </motion.div>
