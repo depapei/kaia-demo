@@ -234,6 +234,8 @@ export default function CheckoutPage({ onBack }: CheckoutPageProps) {
                     required
                     name="postalCode"
                     type="text"
+                    minLength={5}
+                    maxLength={10}
                     className="w-full bg-kaia-cream/30 border border-kaia-tan/50 rounded-2xl px-5 py-4 focus:outline-none focus:ring-2 focus:ring-kaia-red/20 transition-all"
                     placeholder="75004"
                   />
